@@ -1,0 +1,2456 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b2559" id="metaThemeColor" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Pagos cashea Edward" />
+  <title>Pagos cashea Edward</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/png" href="./icon-192.png" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --surface-2: #eff6ff;
+      --card-header: #c8e1fa;
+      --card-border: #0b2559;
+      --navy: #071d49;
+      --border: #dbeafe;
+      --border-subtle: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --primary: #1d4ed8;
+      --primary-light: #dbeafe;
+      --primary-text: #1e40af;
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+      --danger-border: #fecaca;
+      --warning: #d97706;
+      --warning-bg: #fffbeb;
+      --warning-border: #fde68a;
+      --success: #16a34a;
+      --success-bg: #f0fdf4;
+      --success-border: #bbf7d0;
+      --shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+      --radius: 16px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #090f1d;
+      --surface: #111b2e;
+      --surface-2: #172540;
+      --card-header: #16325c;
+      --card-border: #3b82f6;
+      --navy: #0a1936;
+      --border: #1e3a5f;
+      --border-subtle: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-light: rgba(59, 130, 246, 0.18);
+      --primary-text: #93c5fd;
+      --danger: #f87171;
+      --danger-bg: rgba(220, 38, 38, 0.14);
+      --danger-border: rgba(248, 113, 113, 0.35);
+      --warning: #fbbf24;
+      --warning-bg: rgba(217, 119, 6, 0.14);
+      --warning-border: rgba(251, 191, 36, 0.35);
+      --success: #4ade80;
+      --success-bg: rgba(22, 163, 74, 0.14);
+      --success-border: rgba(74, 222, 128, 0.35);
+      --shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding-bottom: 92px;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #0b2559 0%, #1d4ed8 100%);
+      color: #ffffff;
+      padding: 15px 16px 18px;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      box-shadow: 0 4px 16px rgba(11, 37, 89, 0.28);
+    }
+
+    .header-top {
+      max-width: 740px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.32);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.15;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand small {
+      display: block;
+      font-size: 11px;
+      opacity: 0.85;
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-shrink: 0;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.14);
+      color: #ffffff;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .icon-btn:active { transform: scale(0.94); }
+
+    .install-btn {
+      display: none;
+      align-items: center;
+      height: 38px;
+      padding: 0 11px;
+      border-radius: 11px;
+      border: none;
+      background: #ffffff;
+      color: #0b2559;
+      font-weight: 800;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .install-btn.show { display: inline-flex; }
+
+    .container {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 14px 14px 24px;
+    }
+
+    .offline-pill {
+      display: none;
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--primary-text);
+      font-size: 12px;
+      font-weight: 600;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .offline-pill.show { display: flex; }
+
+    /* Alerts */
+    .alerts-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .alert-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 11px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .alert-bar.danger {
+      background: var(--danger-bg);
+      border: 1px solid var(--danger-border);
+      color: var(--danger);
+    }
+
+    .alert-bar.warning {
+      background: var(--warning-bg);
+      border: 1px solid var(--warning-border);
+      color: var(--warning);
+    }
+
+    .alert-left {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .pulse-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: currentColor;
+      flex-shrink: 0;
+      animation: pulse 1.6s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(1.35); }
+    }
+
+    /* Summary Cards */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      padding: 13px 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card.hero {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, #0b2559 0%, #1d4ed8 70%, #2563eb 100%);
+      color: #ffffff;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+
+    .stat-card.hero .stat-label { color: rgba(255, 255, 255, 0.85); }
+
+    .stat-value {
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+    }
+
+    .stat-card.hero .stat-value { font-size: 28px; }
+
+    .stat-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .stat-card.hero .stat-sub { color: rgba(255, 255, 255, 0.82); }
+    .stat-card.danger .stat-value { color: var(--danger); }
+    .stat-card.warning .stat-value { color: var(--warning); }
+
+    /* Segmented Tabs */
+    .seg-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      background: var(--surface);
+      padding: 5px;
+      border-radius: 14px;
+      border: 1px solid var(--border-subtle);
+      margin-bottom: 14px;
+    }
+
+    .seg-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 9px 4px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .seg-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(29, 78, 216, 0.3);
+    }
+
+    /* Search & Chips */
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 10px 13px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+    }
+
+    .search-input:focus { border-color: var(--primary); }
+
+    .pill-filters {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: 12px;
+      scrollbar-width: none;
+    }
+    .pill-filters::-webkit-scrollbar { display: none; }
+
+    .chip {
+      border: 1px solid var(--border-subtle);
+      background: var(--surface);
+      color: var(--text-muted);
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .chip.active {
+      background: var(--primary-light);
+      color: var(--primary-text);
+      border-color: var(--primary);
+    }
+
+    /* Date Groups & Payment Rows */
+    .date-group { margin-bottom: 16px; }
+
+    .date-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 4px;
+      margin-bottom: 6px;
+    }
+
+    .date-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+      text-transform: capitalize;
+    }
+
+    .date-subtotal {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--primary-text);
+      background: var(--primary-light);
+      padding: 3px 9px;
+      border-radius: 999px;
+    }
+
+    .pay-card {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-left: 4px solid var(--primary);
+      border-radius: 14px;
+      padding: 12px 13px;
+      margin-bottom: 9px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .pay-card.overdue { border-left-color: var(--danger); }
+    .pay-card.soon { border-left-color: var(--warning); }
+    .pay-card.paid { border-left-color: var(--danger); opacity: 0.82; }
+
+    .pay-info { min-width: 0; flex: 1; }
+
+    .pay-top {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+
+    .pay-store { font-size: 15px; font-weight: 800; }
+
+    .tag-badge {
+      display: inline-flex;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--primary-light);
+      color: var(--primary-text);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .status-badge.overdue { background: var(--danger-bg); color: var(--danger); }
+    .status-badge.soon { background: var(--warning-bg); color: var(--warning); }
+    .status-badge.normal { background: var(--surface-2); color: var(--primary-text); }
+    .status-badge.paid { background: var(--danger-bg); color: var(--danger); }
+
+    .pay-meta { font-size: 12px; color: var(--text-muted); }
+
+    .pay-detail-note {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--bg);
+      padding: 4px 8px;
+      border-radius: 8px;
+      display: inline-block;
+    }
+
+    .pay-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .pay-amount { font-size: 18px; font-weight: 800; }
+
+    .pay-btn {
+      border: none;
+      border-radius: 9px;
+      padding: 7px 11px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .pay-btn.done {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid var(--danger-border);
+    }
+
+    /* Debt Cards */
+    .debt-card {
+      background: var(--surface);
+      border: 2px solid var(--card-border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 13px;
+      box-shadow: var(--shadow);
+    }
+
+    .debt-card.overdue { border-color: var(--danger); }
+    .debt-card.soon { border-color: var(--warning); }
+    .debt-card.paid { border-color: var(--success); opacity: 0.85; }
+
+    .debt-card-top {
+      background: var(--card-header);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .debt-title {
+      font-size: 17px;
+      font-weight: 900;
+      margin: 0;
+      color: var(--text);
+      line-height: 1.15;
+    }
+
+    .total-debt-box {
+      background: var(--navy);
+      color: #ffffff;
+      border-radius: 10px;
+      padding: 5px 12px;
+      font-size: 18px;
+      font-weight: 900;
+      min-width: 66px;
+      text-align: center;
+      letter-spacing: -0.3px;
+      flex-shrink: 0;
+    }
+
+    .debt-body {
+      padding: 12px 14px;
+    }
+
+    .debt-badges {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .debt-note {
+      background: var(--surface-2);
+      border-radius: 9px;
+      padding: 7px 10px;
+      font-size: 12px;
+      color: var(--primary-text);
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .debt-note strong { color: var(--text); }
+
+    .installment-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .inst-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 7px 9px;
+      border-radius: 10px;
+      background: var(--bg);
+      font-size: 13px;
+    }
+
+    .inst-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .inst-check {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--danger);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .inst-text.paid {
+      color: var(--danger);
+      text-decoration: line-through;
+      opacity: 0.92;
+    }
+
+    .inst-amount { font-weight: 800; white-space: nowrap; }
+    .inst-amount.paid { color: var(--danger); text-decoration: line-through; }
+
+    .debt-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      padding-top: 9px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .debt-rest {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .debt-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-sm {
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid var(--border-subtle);
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .btn-sm.danger {
+      color: var(--danger);
+      border-color: var(--danger-border);
+      background: var(--danger-bg);
+    }
+
+    /* Total Summary View */
+    .total-panel {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 14px;
+    }
+
+    .total-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .total-row strong { font-size: 16px; }
+
+    /* Views */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* Forms & Boxes */
+    .card-box {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+
+    .card-box h2 {
+      margin: 0 0 12px;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .form-group { margin-bottom: 12px; }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 11px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      background: var(--surface);
+    }
+
+    textarea { resize: vertical; min-height: 62px; }
+
+    .btn-primary {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 13px 16px;
+      background: linear-gradient(135deg, #0b2559, #1d4ed8);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.28);
+    }
+
+    .btn-whatsapp {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 13px 16px;
+      background: linear-gradient(135deg, #15803d, #16a34a);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.28);
+    }
+
+    .btn-secondary {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 14px;
+      background: var(--surface-2);
+      color: var(--primary-text);
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-danger-outline {
+      width: 100%;
+      border: 1px solid var(--danger-border);
+      border-radius: 12px;
+      padding: 11px 14px;
+      background: var(--danger-bg);
+      color: var(--danger);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .stack-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .preview-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      font-size: 12px;
+    }
+
+    .preview-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .preview-item:last-child { border-bottom: none; }
+    .preview-item input { padding: 6px 8px; font-size: 12px; border-radius: 8px; }
+
+    /* Image Export Preview */
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .switch-row:last-of-type { border-bottom: none; }
+
+    .switch-row input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .canvas-frame {
+      background: #e2e8f0;
+      padding: 10px;
+      border-radius: 14px;
+      border: 1px solid var(--border-subtle);
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    [data-theme="dark"] .canvas-frame { background: #0f172a; }
+
+    #cardsCanvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 10px;
+      background: #ffffff;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
+    }
+
+    .empty {
+      text-align: center;
+      padding: 34px 20px;
+      background: var(--surface);
+      border: 1px dashed var(--border-subtle);
+      border-radius: var(--radius);
+      color: var(--text-muted);
+    }
+
+    .empty h3 { margin: 0 0 6px; color: var(--text); font-size: 16px; }
+
+    .help-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin: 4px 0 0;
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border-subtle);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      padding: 6px 4px calc(8px + env(safe-area-inset-bottom));
+      z-index: 50;
+      box-shadow: 0 -4px 18px rgba(15, 23, 42, 0.08);
+    }
+
+    .nav-item {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 6px 2px;
+      font-size: 10.5px;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 11px;
+    }
+
+    .nav-item.active {
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .nav-item svg { width: 20px; height: 20px; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 86px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #0f172a;
+      color: #ffffff;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 100;
+      white-space: nowrap;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-top">
+      <div class="brand">
+        <div class="brand-badge">CE</div>
+        <div>
+          <h1>Pagos cashea Edward</h1>
+          <small id="headerSubtitle">Control personal offline</small>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="install-btn" id="btnInstallPwa" type="button">Instalar</button>
+        <button class="icon-btn" id="btnQuickImage" type="button" title="Exportar tarjetas como imagen" aria-label="Exportar tarjetas">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
+        </button>
+        <button class="icon-btn" id="btnTheme" type="button" title="Cambiar tema" aria-label="Cambiar tema"></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="offline-pill" id="offlinePill">
+      <span>●</span> Modo sin conexión activo — tus datos siguen guardados en este teléfono.
+    </div>
+
+    <div class="alerts-stack" id="alertsContainer"></div>
+    <section class="summary-grid" id="summaryCards"></section>
+
+    <!-- VIEW 1: PRÓXIMOS PAGOS -->
+    <section class="view active" id="view-pagos">
+      <div class="seg-tabs" id="paymentRangeTabs">
+        <button class="seg-btn active" data-range="hoy" type="button">Hoy</button>
+        <button class="seg-btn" data-range="semana" type="button">Semana</button>
+        <button class="seg-btn" data-range="fechas" type="button">Por fechas</button>
+        <button class="seg-btn" data-range="total" type="button">Total</button>
+      </div>
+      <div id="paymentsList"></div>
+    </section>
+
+    <!-- VIEW 2: TARJETAS / DEUDAS -->
+    <section class="view" id="view-deudas">
+      <div class="toolbar">
+        <input type="text" class="search-input" id="searchDebts" placeholder="Buscar comercio, etiqueta o detalle..." />
+      </div>
+      <div class="pill-filters" id="debtFilterChips">
+        <button class="chip active" data-filter="activas" type="button">Activas</button>
+        <button class="chip" data-filter="vencidas" type="button">Vencidas</button>
+        <button class="chip" data-filter="proximas" type="button">Próximas (3d)</button>
+        <button class="chip" data-filter="pagadas" type="button">Pagadas</button>
+        <button class="chip" data-filter="todas" type="button">Todas</button>
+      </div>
+      <div id="debtsList"></div>
+    </section>
+
+    <!-- VIEW 3: EXPORTAR TARJETAS EN IMAGEN -->
+    <section class="view" id="view-imagen">
+      <div class="card-box">
+        <h2>Exportar tarjetas en imagen (PNG)</h2>
+        <p class="help-text" style="margin-bottom:12px;">
+          Genera la hoja de tarjetas azul y blanca con las cuotas pagadas en rojo y los detalles visibles para enviar directo por WhatsApp.
+        </p>
+
+        <div class="form-group">
+          <label for="imgFilterTag">¿Qué tarjetas incluir?</label>
+          <select id="imgFilterTag"></select>
+        </div>
+
+        <div class="switch-row">
+          <span>Mostrar detalles en cada tarjeta</span>
+          <input type="checkbox" id="imgShowDetails" checked />
+        </div>
+        <div class="switch-row">
+          <span>Solo cuotas pendientes (oculta las pagadas)</span>
+          <input type="checkbox" id="imgOnlyPending" />
+        </div>
+        <div class="switch-row">
+          <span>Resaltar fechas vencidas en naranja</span>
+          <input type="checkbox" id="imgHighlightOverdue" />
+        </div>
+        <div class="switch-row">
+          <span>Mostrar total pendiente al final</span>
+          <input type="checkbox" id="imgShowTotalFooter" />
+        </div>
+
+        <div class="stack-btns" style="margin-top:14px;">
+          <button type="button" class="btn-whatsapp" id="btnShareImg">
+            Enviar / Compartir imagen (WhatsApp)
+          </button>
+          <button type="button" class="btn-primary" id="btnDownloadImg">
+            Descargar imagen PNG al teléfono
+          </button>
+        </div>
+
+        <p class="help-text" id="imgStatsText" style="text-align:center; margin-top:10px;"></p>
+
+        <div class="canvas-frame">
+          <canvas id="cardsCanvas"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: NUEVA / EDITAR DEUDA -->
+    <section class="view" id="view-nueva">
+      <div class="card-box">
+        <h2 id="formTitle">Registrar compra / tarjeta Cashea</h2>
+        <form id="debtForm">
+          <input type="hidden" id="editDebtId" value="" />
+
+          <div class="form-group">
+            <label for="fStore">Comercio o nombre de la tarjeta</label>
+            <input type="text" id="fStore" placeholder="Ej: Autopartes, Eurocars, Titanic Center..." required />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fTotal">Deuda entera ($) — recuadro</label>
+              <input type="number" id="fTotal" step="0.01" min="0.01" placeholder="Ej: 33" required />
+            </div>
+            <div class="form-group">
+              <label for="fQuotaAmount">Monto de cada cuota ($)</label>
+              <input type="number" id="fQuotaAmount" step="0.01" min="0.01" placeholder="Ej: 11" required />
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top:-6px; margin-bottom:12px;">
+            <button type="button" class="btn-sm" id="btnAutoSplit" style="width:100%;">
+              Calcular cuota automática (Deuda entera ÷ Cuotas)
+            </button>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fQuotas">Cuotas a programar</label>
+              <select id="fQuotas">
+                <option value="1">1 cuota</option>
+                <option value="2">2 cuotas</option>
+                <option value="3" selected>3 cuotas</option>
+                <option value="4">4 cuotas</option>
+                <option value="5">5 cuotas</option>
+                <option value="6">6 cuotas</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="fFreq">Frecuencia</label>
+              <select id="fFreq">
+                <option value="14" selected>Cada 14 días (Cashea)</option>
+                <option value="15">Cada 15 días</option>
+                <option value="7">Semanal (7 días)</option>
+                <option value="30">Mensual (30 días)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fFirstDate">Fecha 1ra cuota</label>
+              <input type="date" id="fFirstDate" required />
+            </div>
+            <div class="form-group">
+              <label for="fTag">Etiqueta (persona / tipo)</label>
+              <input type="text" id="fTag" list="tagSuggestions" placeholder="Ej: Amiga, Edward..." required />
+              <datalist id="tagSuggestions">
+                <option value="Amiga"></option>
+                <option value="Edward"></option>
+                <option value="Repuestos"></option>
+                <option value="Supermercado"></option>
+                <option value="Hogar"></option>
+              </datalist>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="fDetails">Detalles / notas (aparecen en la tarjeta y en la imagen)</label>
+            <textarea id="fDetails" placeholder="Ej: Compra de cauchos, factura #, nota para recordar..."></textarea>
+          </div>
+
+          <div class="preview-box">
+            <div style="font-weight:800; color:var(--primary-text); margin-bottom:6px;">
+              Fechas y montos de cuotas (ajustables):
+            </div>
+            <div id="quotaPreviewList"></div>
+          </div>
+
+          <div class="stack-btns">
+            <button type="submit" class="btn-primary" id="btnSaveDebt">Guardar tarjeta</button>
+            <button type="button" class="btn-secondary" id="btnCancelEdit" style="display:none;">Cancelar edición</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- VIEW 5: RESPALDO Y PWA -->
+    <section class="view" id="view-respaldo">
+      <div class="card-box">
+        <h2>Copia de seguridad (Exportar / Importar)</h2>
+        <p class="help-text" style="margin-bottom:14px;">
+          Tus pagos se guardan localmente en este teléfono. Descarga tu archivo JSON para respaldar o restaurar tus datos.
+        </p>
+        <div class="stack-btns">
+          <button type="button" class="btn-primary" id="btnExportJson">
+            Exportar copia de seguridad (.json)
+          </button>
+          <button type="button" class="btn-secondary" id="btnImportTrigger">
+            Importar copia de seguridad (.json)
+          </button>
+          <input type="file" id="importFileInput" accept=".json,application/json" style="display:none;" />
+        </div>
+      </div>
+
+      <div class="card-box">
+        <h2>Iconos para GitHub / Vercel (PWA)</h2>
+        <p class="help-text" style="margin-bottom:12px;">
+          Sube estos dos iconos PNG a la raíz de tu repositorio junto a <code>index.html</code>, <code>manifest.json</code> y <code>sw.js</code>:
+        </p>
+        <div class="stack-btns">
+          <button type="button" class="btn-secondary" onclick="downloadPwaIcon(192)">Descargar icon-192.png</button>
+          <button type="button" class="btn-secondary" onclick="downloadPwaIcon(512)">Descargar icon-512.png</button>
+        </div>
+      </div>
+
+      <div class="card-box">
+        <h2>Datos precargados</h2>
+        <div class="stack-btns">
+          <button type="button" class="btn-secondary" id="btnRestoreDemo">Restaurar las 11 tarjetas precargadas</button>
+          <button type="button" class="btn-danger-outline" id="btnClearAll">Borrar todas las tarjetas</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bottom Navigation (5 Tabs) -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-view="pagos" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+      <span>Próximos</span>
+    </button>
+    <button class="nav-item" data-view="deudas" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+        <line x1="2" y1="10" x2="22" y2="10"></line>
+      </svg>
+      <span>Tarjetas</span>
+    </button>
+    <button class="nav-item" data-view="imagen" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+        <polyline points="21 15 16 10 5 21"></polyline>
+      </svg>
+      <span>Imagen</span>
+    </button>
+    <button class="nav-item" data-view="nueva" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="16"></line>
+        <line x1="8" y1="12" x2="16" y2="12"></line>
+      </svg>
+      <span>Nueva</span>
+    </button>
+    <button class="nav-item" data-view="respaldo" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3v12"></path>
+        <path d="m8 11 4 4 4-4"></path>
+        <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"></path>
+      </svg>
+      <span>Respaldo</span>
+    </button>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    /* =====================================================================
+       CONFIGURACIÓN Y UTILIDADES
+    ===================================================================== */
+    const STORAGE_KEY = "pagos_cashea_edward_v2";
+    const THEME_KEY = "pagos_cashea_edward_theme";
+    const MONTHS_SHORT = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
+
+    function todayISO() {
+      return formatISO(new Date());
+    }
+
+    function formatISO(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function parseLocalDate(isoStr) {
+      const [y, m, d] = isoStr.split("-").map(Number);
+      return new Date(y, m - 1, d);
+    }
+
+    function addDaysISO(baseISO, days) {
+      const d = parseLocalDate(baseISO);
+      d.setDate(d.getDate() + days);
+      return formatISO(d);
+    }
+
+    function diffDaysFromToday(isoStr) {
+      const today = parseLocalDate(todayISO());
+      const target = parseLocalDate(isoStr);
+      return Math.round((target - today) / 86400000);
+    }
+
+    function formatDateHuman(isoStr) {
+      const d = parseLocalDate(isoStr);
+      return d.toLocaleDateString("es-VE", {
+        weekday: "short",
+        day: "numeric",
+        month: "short"
+      });
+    }
+
+    function formatCardDateParts(isoStr) {
+      const [, m, d] = isoStr.split("-").map(Number);
+      return { day: String(d), month: MONTHS_SHORT[m - 1] || "" };
+    }
+
+    function formatMoney(num) {
+      return "$" + (Number(num) || 0).toFixed(2);
+    }
+
+    function formatCleanNum(num, keepTwoDecimalsIfTenth = false) {
+      const n = Math.round((Number(num) || 0) * 100) / 100;
+      if (Number.isInteger(n)) return String(n);
+      const two = n.toFixed(2);
+      if (keepTwoDecimalsIfTenth) return two;
+      return two.endsWith("0") ? n.toFixed(1) : two;
+    }
+
+    function esc(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    /* =====================================================================
+       DATOS PRECARGADOS (Las 11 tarjetas exactas)
+    ===================================================================== */
+    function makeCard(id, comercio, deudaTotal, montoCuota, fechas, etiqueta = "Amiga", detalles = "") {
+      return {
+        id,
+        comercio,
+        etiqueta,
+        detalles,
+        deudaTotal,
+        montoCuota,
+        cuotas: fechas.map((fecha, i) => ({
+          numero: i + 1,
+          monto: montoCuota,
+          fecha,
+          pagada: false
+        }))
+      };
+    }
+
+    function buildPreloadedDebts() {
+      return [
+        makeCard("c-01", "Autopartes",     33,   11,    ["2026-11-25", "2026-12-09", "2026-12-23"]),
+        makeCard("c-02", "Eurocars",       33,   6.60,  ["2026-11-24", "2026-12-08", "2026-12-22"]),
+        makeCard("c-03", "Arturo",         26.5, 8.8,   ["2026-11-21", "2026-12-05", "2026-12-19"]),
+        makeCard("c-04", "Ferrochara",     15.8, 5.27,  ["2026-11-20", "2026-12-04", "2026-12-18"]),
+        makeCard("c-05", "Eurocars",       25,   5,     ["2026-11-14", "2026-11-28", "2026-12-12"]),
+        makeCard("c-06", "Masshopping",    184,  30,    ["2026-11-18", "2026-11-27", "2026-12-11", "2026-12-25", "2027-01-08", "2027-01-22"]),
+        makeCard("c-07", "Arturos",        242,  40,    ["2026-11-23", "2026-12-07", "2026-12-21", "2027-01-04", "2027-01-18"]),
+        makeCard("c-08", "Titanic Center", 49,   16,    ["2026-11-16", "2026-11-30"]),
+        makeCard("c-09", "Autopartes KRP", 239,  39.8,  ["2026-11-13", "2026-11-27", "2026-12-11", "2026-12-25", "2027-01-08"]),
+        makeCard("c-10", "Autopartes KPP", 44,   19.6,  ["2026-11-21", "2026-12-22"]),
+        makeCard("c-11", "Titanic Center", 37,   12.5,  ["2026-11-16"])
+      ];
+    }
+
+    /* =====================================================================
+       ESTADO
+    ===================================================================== */
+    let debts = loadDebts();
+    let currentView = "pagos";
+    let currentPaymentRange = "hoy";
+    let currentDebtFilter = "activas";
+    let draftQuotas = [];
+    let deferredInstallPrompt = null;
+
+    function loadDebts() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      const initial = buildPreloadedDebts();
+      saveDebts(initial);
+      return initial;
+    }
+
+    function saveDebts(data = debts) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    /* =====================================================================
+       TEMA CLARO / OSCURO
+    ===================================================================== */
+    function initTheme() {
+      applyTheme(localStorage.getItem(THEME_KEY) || "light");
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem(THEME_KEY, theme);
+      document.getElementById("metaThemeColor").setAttribute("content", theme === "dark" ? "#090f1d" : "#0b2559");
+      document.getElementById("btnTheme").innerHTML = theme === "dark"
+        ? `<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`
+        : `<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+    }
+
+    document.getElementById("btnTheme").addEventListener("click", () => {
+      applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
+    });
+
+    document.getElementById("btnQuickImage").addEventListener("click", () => {
+      switchView("imagen");
+    });
+
+    /* =====================================================================
+       CÁLCULOS
+    ===================================================================== */
+    function getAllInstallments() {
+      const list = [];
+      debts.forEach(debt => {
+        const totalCuotas = debt.cuotas.length;
+        debt.cuotas.forEach((c, idx) => {
+          const diff = diffDaysFromToday(c.fecha);
+          let estado = "normal";
+          if (c.pagada) estado = "paid";
+          else if (diff < 0) estado = "overdue";
+          else if (diff <= 3) estado = "soon";
+
+          list.push({
+            debtId: debt.id,
+            quotaIndex: idx,
+            comercio: debt.comercio,
+            etiqueta: debt.etiqueta,
+            detalles: debt.detalles,
+            deudaTotal: debt.deudaTotal,
+            totalCuotas,
+            numero: c.numero,
+            monto: Number(c.monto) || 0,
+            fecha: c.fecha,
+            pagada: !!c.pagada,
+            diff,
+            estado
+          });
+        });
+      });
+      return list.sort((a, b) => a.fecha.localeCompare(b.fecha));
+    }
+
+    function getStatusLabel(item) {
+      if (item.pagada) return { text: "Pagada", cls: "paid" };
+      if (item.diff < 0) {
+        const d = Math.abs(item.diff);
+        return { text: `Vencida (${d}d)`, cls: "overdue" };
+      }
+      if (item.diff === 0) return { text: "Vence hoy", cls: "soon" };
+      if (item.diff === 1) return { text: "Mañana", cls: "soon" };
+      if (item.diff <= 3) return { text: `En ${item.diff} días`, cls: "soon" };
+      return { text: `En ${item.diff}d`, cls: "normal" };
+    }
+
+    function getDebtSummary(debt) {
+      const total = Number(debt.deudaTotal) || 0;
+      const pendiente = debt.cuotas.filter(c => !c.pagada).reduce((s, c) => s + (Number(c.monto) || 0), 0);
+      const pagadasCount = debt.cuotas.filter(c => c.pagada).length;
+      const vencidas = debt.cuotas.filter(c => !c.pagada && diffDaysFromToday(c.fecha) < 0);
+      const proximas = debt.cuotas.filter(c => !c.pagada && diffDaysFromToday(c.fecha) >= 0 && diffDaysFromToday(c.fecha) <= 3);
+      let estado = "normal";
+      if (pendiente <= 0.001) estado = "paid";
+      else if (vencidas.length > 0) estado = "overdue";
+      else if (proximas.length > 0) estado = "soon";
+      return { total, pendiente, pagadasCount, totalCount: debt.cuotas.length, vencidas, proximas, estado };
+    }
+
+    /* =====================================================================
+       RENDER PRINCIPAL
+    ===================================================================== */
+    function renderAll() {
+      const all = getAllInstallments();
+      const pending = all.filter(i => !i.pagada);
+      const overdue = pending.filter(i => i.diff < 0);
+      const dueSoon = pending.filter(i => i.diff >= 0 && i.diff <= 3);
+      const dueWeek = pending.filter(i => i.diff >= 0 && i.diff <= 7);
+
+      const totalPending = pending.reduce((s, i) => s + i.monto, 0);
+      const totalOverdue = overdue.reduce((s, i) => s + i.monto, 0);
+      const totalWeek = dueWeek.reduce((s, i) => s + i.monto, 0);
+      const totalOriginal = debts.reduce((s, d) => s + (Number(d.deudaTotal) || 0), 0);
+      const totalPaid = all.filter(i => i.pagada).reduce((s, i) => s + i.monto, 0);
+
+      document.getElementById("headerSubtitle").textContent =
+        `${debts.length} tarjetas · ${pending.length} cuotas pendientes`;
+
+      const alertsEl = document.getElementById("alertsContainer");
+      let alertsHTML = "";
+      if (overdue.length > 0) {
+        alertsHTML += `
+          <div class="alert-bar danger" onclick="jumpToAlerts('vencidas')">
+            <div class="alert-left">
+              <span class="pulse-dot"></span>
+              <span>${overdue.length} ${overdue.length === 1 ? "cuota vencida" : "cuotas vencidas"} (${formatMoney(totalOverdue)})</span>
+            </div>
+            <span>Ver ›</span>
+          </div>`;
+      }
+      if (dueSoon.length > 0) {
+        const soonSum = dueSoon.reduce((s, i) => s + i.monto, 0);
+        alertsHTML += `
+          <div class="alert-bar warning" onclick="jumpToAlerts('proximas')">
+            <div class="alert-left">
+              <span class="pulse-dot"></span>
+              <span>${dueSoon.length} ${dueSoon.length === 1 ? "pago próximo" : "pagos próximos"} en 3 días (${formatMoney(soonSum)})</span>
+            </div>
+            <span>Ver ›</span>
+          </div>`;
+      }
+      alertsEl.innerHTML = alertsHTML;
+
+      document.getElementById("summaryCards").innerHTML = `
+        <div class="stat-card hero">
+          <div>
+            <div class="stat-label">Cuotas pendientes por pagar</div>
+            <div class="stat-value">${formatMoney(totalPending)}</div>
+            <div class="stat-sub">Suma de recuadros (deuda entera): ${formatMoney(totalOriginal)}</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="stat-label">Pagado</div>
+            <div style="font-size:17px;font-weight:800;">${formatMoney(totalPaid)}</div>
+          </div>
+        </div>
+        <div class="stat-card ${overdue.length ? "danger" : ""}">
+          <div class="stat-label">Vencidas</div>
+          <div class="stat-value">${formatMoney(totalOverdue)}</div>
+          <div class="stat-sub">${overdue.length} ${overdue.length === 1 ? "cuota" : "cuotas"}</div>
+        </div>
+        <div class="stat-card ${dueWeek.length ? "warning" : ""}">
+          <div class="stat-label">Esta semana (7d)</div>
+          <div class="stat-value">${formatMoney(totalWeek)}</div>
+          <div class="stat-sub">${dueWeek.length} ${dueWeek.length === 1 ? "cuota" : "cuotas"}</div>
+        </div>
+      `;
+
+      renderPaymentsView(all);
+      renderDebtsView();
+      refreshImageTagFilter();
+      if (currentView === "imagen") renderCardsImage();
+    }
+
+    function renderPaymentsView(all) {
+      const container = document.getElementById("paymentsList");
+      const pending = all.filter(i => !i.pagada);
+
+      if (currentPaymentRange === "total") {
+        const overdue = pending.filter(i => i.diff < 0);
+        const hoy = pending.filter(i => i.diff === 0);
+        const semana = pending.filter(i => i.diff >= 0 && i.diff <= 7);
+        const futuro = pending.filter(i => i.diff > 7);
+        const pagadas = all.filter(i => i.pagada);
+        const sum = arr => arr.reduce((s, i) => s + i.monto, 0);
+        const totalDeudasEnteras = debts.reduce((s, d) => s + (Number(d.deudaTotal) || 0), 0);
+
+        container.innerHTML = `
+          <div class="total-panel">
+            <div class="total-row">
+              <span>Suma de recuadros (deuda entera)</span>
+              <strong style="color:var(--primary)">${formatMoney(totalDeudasEnteras)}</strong>
+            </div>
+            <div class="total-row">
+              <span>Vencidas (${overdue.length})</span>
+              <strong style="color:var(--danger)">${formatMoney(sum(overdue))}</strong>
+            </div>
+            <div class="total-row">
+              <span>Para hoy (${hoy.length})</span>
+              <strong style="color:var(--warning)">${formatMoney(sum(hoy))}</strong>
+            </div>
+            <div class="total-row">
+              <span>Esta semana / 7 días (${semana.length})</span>
+              <strong>${formatMoney(sum(semana))}</strong>
+            </div>
+            <div class="total-row">
+              <span>Después de 7 días (${futuro.length})</span>
+              <strong>${formatMoney(sum(futuro))}</strong>
+            </div>
+            <div class="total-row">
+              <span>Total marcado como pagado (${pagadas.length})</span>
+              <strong style="color:var(--danger)">${formatMoney(sum(pagadas))}</strong>
+            </div>
+            <div class="total-row" style="border-top:2px solid var(--border); margin-top:4px; padding-top:12px;">
+              <strong>Total cuotas pendientes</strong>
+              <strong style="font-size:20px; color:var(--primary)">${formatMoney(sum(pending))}</strong>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      let filtered = [];
+      let emptyTitle = "Sin pagos pendientes";
+      let emptyMsg = "Estás al día en este rango.";
+
+      if (currentPaymentRange === "hoy") {
+        filtered = pending.filter(i => i.diff <= 0);
+        emptyTitle = "Sin pagos vencidos ni para hoy";
+        emptyMsg = "Revisa la pestaña Semana o Por fechas para ver tus próximos compromisos.";
+      } else if (currentPaymentRange === "semana") {
+        filtered = pending.filter(i => i.diff <= 7);
+        emptyTitle = "Semana libre";
+        emptyMsg = "No tienes cuotas pendientes en los próximos 7 días.";
+      } else {
+        filtered = pending;
+        emptyTitle = "¡Todo pagado!";
+        emptyMsg = "No quedan cuotas pendientes registradas.";
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="empty"><h3>${emptyTitle}</h3><p>${emptyMsg}</p></div>`;
+        return;
+      }
+
+      const groups = {};
+      filtered.forEach(item => {
+        if (!groups[item.fecha]) groups[item.fecha] = [];
+        groups[item.fecha].push(item);
+      });
+
+      const rangeSum = filtered.reduce((s, i) => s + i.monto, 0);
+      let html = `
+        <div class="date-header" style="margin-bottom:10px; background:var(--surface); padding:10px 12px; border-radius:12px; border:1px solid var(--border-subtle);">
+          <span style="font-size:13px; font-weight:700; color:var(--text-muted);">
+            Total en esta vista (${filtered.length} ${filtered.length === 1 ? "cuota" : "cuotas"})
+          </span>
+          <span style="font-size:16px; font-weight:900; color:var(--primary);">${formatMoney(rangeSum)}</span>
+        </div>
+      `;
+
+      Object.keys(groups).sort().forEach(fecha => {
+        const items = groups[fecha];
+        const dayTotal = items.reduce((s, i) => s + i.monto, 0);
+        const diff = diffDaysFromToday(fecha);
+        let dayLabel = formatDateHuman(fecha);
+        if (diff === 0) dayLabel = `Hoy · ${dayLabel}`;
+        else if (diff === 1) dayLabel = `Mañana · ${dayLabel}`;
+        else if (diff < 0) dayLabel = `Vencida · ${dayLabel}`;
+
+        html += `
+          <div class="date-group">
+            <div class="date-header">
+              <span class="date-title">${esc(dayLabel)}</span>
+              <span class="date-subtotal">${formatMoney(dayTotal)}</span>
+            </div>
+            ${items.map(renderPaymentRow).join("")}
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function renderPaymentRow(item) {
+      const st = getStatusLabel(item);
+      return `
+        <div class="pay-card ${item.estado}">
+          <div class="pay-info">
+            <div class="pay-top">
+              <span class="pay-store">${esc(item.comercio)}</span>
+              <span class="tag-badge">${esc(item.etiqueta || "Sin etiqueta")}</span>
+              <span class="status-badge ${st.cls}">${esc(st.text)}</span>
+            </div>
+            <div class="pay-meta">
+              Cuota ${item.numero}/${item.totalCuotas} · Recuadro: <strong>$${formatCleanNum(item.deudaTotal)}</strong>
+            </div>
+            ${item.detalles ? `<div class="pay-detail-note">${esc(item.detalles)}</div>` : ""}
+          </div>
+          <div class="pay-right">
+            <span class="pay-amount">${formatMoney(item.monto)}</span>
+            <button class="pay-btn ${item.pagada ? "done" : ""}" type="button"
+              onclick="toggleQuotaPaid('${esc(item.debtId)}', ${item.quotaIndex})">
+              ${item.pagada ? "✓ Pagada" : "Pagar"}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDebtsView() {
+      const container = document.getElementById("debtsList");
+      const q = (document.getElementById("searchDebts").value || "").trim().toLowerCase();
+
+      const filtered = debts.filter(debt => {
+        const sum = getDebtSummary(debt);
+        if (currentDebtFilter === "activas" && sum.estado === "paid") return false;
+        if (currentDebtFilter === "vencidas" && sum.vencidas.length === 0) return false;
+        if (currentDebtFilter === "proximas" && sum.proximas.length === 0) return false;
+        if (currentDebtFilter === "pagadas" && sum.estado !== "paid") return false;
+        if (q) {
+          const hay = `${debt.comercio} ${debt.etiqueta} ${debt.detalles}`.toLowerCase();
+          return hay.includes(q);
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="empty"><h3>No hay tarjetas en este filtro</h3><p>Agrega una compra en "Nueva" o cambia el filtro.</p></div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(debt => {
+        const s = getDebtSummary(debt);
+        let badgeHtml = `<span class="status-badge normal">Al día</span>`;
+        if (s.estado === "paid") badgeHtml = `<span class="status-badge paid">Completada</span>`;
+        else if (s.estado === "overdue") badgeHtml = `<span class="status-badge overdue">${s.vencidas.length} vencida(s)</span>`;
+        else if (s.estado === "soon") badgeHtml = `<span class="status-badge soon">Próxima</span>`;
+
+        const instRows = debt.cuotas.map((c, idx) => {
+          const diff = diffDaysFromToday(c.fecha);
+          const st = getStatusLabel({ pagada: c.pagada, diff });
+          const dp = formatCardDateParts(c.fecha);
+          return `
+            <div class="inst-row">
+              <div class="inst-left">
+                <input type="checkbox" class="inst-check" ${c.pagada ? "checked" : ""}
+                  onchange="toggleQuotaPaid('${esc(debt.id)}', ${idx})" />
+                <div class="inst-text ${c.pagada ? "paid" : ""}">
+                  <strong>${dp.day} ${dp.month}</strong>
+                  <span class="status-badge ${st.cls}" style="margin-left:5px;">${esc(st.text)}</span>
+                </div>
+              </div>
+              <span class="inst-amount ${c.pagada ? "paid" : ""}">${formatCleanNum(c.monto)} $</span>
+            </div>
+          `;
+        }).join("");
+
+        return `
+          <article class="debt-card ${s.estado}">
+            <div class="debt-card-top">
+              <h3 class="debt-title">${esc(debt.comercio)}</h3>
+              <div class="total-debt-box" title="Deuda entera">${formatCleanNum(s.total)}</div>
+            </div>
+            <div class="debt-body">
+              <div class="debt-badges">
+                <span class="tag-badge">${esc(debt.etiqueta || "Sin etiqueta")}</span>
+                ${badgeHtml}
+              </div>
+              ${debt.detalles ? `<div class="debt-note"><strong>Detalles:</strong> ${esc(debt.detalles)}</div>` : ""}
+              <div class="installment-list">${instRows}</div>
+              <div class="debt-footer">
+                <span class="debt-rest">Pendiente: <strong>${formatMoney(s.pendiente)}</strong></span>
+                <div class="debt-actions">
+                  <button class="btn-sm" type="button" onclick="startEditDebt('${esc(debt.id)}')">Editar</button>
+                  <button class="btn-sm danger" type="button" onclick="deleteDebt('${esc(debt.id)}')">Eliminar</button>
+                </div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    /* =====================================================================
+       GENERADOR DE IMAGEN PNG (PAGADAS EN ROJO + DETALLES VISIBLES)
+    ===================================================================== */
+    function refreshImageTagFilter() {
+      const sel = document.getElementById("imgFilterTag");
+      const current = sel.value || "__ALL__";
+      const tags = [...new Set(debts.map(d => (d.etiqueta || "Sin etiqueta").trim()))];
+
+      let html = `<option value="__ALL__">Todas las tarjetas</option>`;
+      tags.forEach(t => {
+        html += `<option value="${esc(t)}">Solo etiqueta: ${esc(t)}</option>`;
+      });
+      sel.innerHTML = html;
+      sel.value = [...sel.options].some(o => o.value === current) ? current : "__ALL__";
+    }
+
+    function roundRectPath(ctx, x, y, w, h, r) {
+      const rr = typeof r === "number" ? { tl: r, tr: r, br: r, bl: r } : r;
+      ctx.beginPath();
+      ctx.moveTo(x + rr.tl, y);
+      ctx.lineTo(x + w - rr.tr, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + rr.tr);
+      ctx.lineTo(x + w, y + h - rr.br);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - rr.br, y + h);
+      ctx.lineTo(x + rr.bl, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - rr.bl);
+      ctx.lineTo(x, y + rr.tl);
+      ctx.quadraticCurveTo(x, y, x + rr.tl, y);
+      ctx.closePath();
+    }
+
+    function wrapCanvasText(ctx, text, maxWidth) {
+      const paragraphs = String(text || "").split(/\r?\n/);
+      const lines = [];
+      paragraphs.forEach(para => {
+        const words = para.trim().split(/\s+/).filter(Boolean);
+        if (!words.length) return;
+        let current = "";
+        words.forEach(word => {
+          const test = current ? `${current} ${word}` : word;
+          if (ctx.measureText(test).width <= maxWidth) {
+            current = test;
+          } else {
+            if (current) lines.push(current);
+            if (ctx.measureText(word).width <= maxWidth) {
+              current = word;
+            } else {
+              let chunk = "";
+              for (const ch of word) {
+                if (ctx.measureText(chunk + ch).width <= maxWidth) {
+                  chunk += ch;
+                } else {
+                  if (chunk) lines.push(chunk);
+                  chunk = ch;
+                }
+              }
+              current = chunk;
+            }
+          }
+        });
+        if (current) lines.push(current);
+      });
+      return lines;
+    }
+
+    function getCardsForImage() {
+      const tagFilter = document.getElementById("imgFilterTag").value;
+      const onlyPending = document.getElementById("imgOnlyPending").checked;
+
+      return debts
+        .filter(d => tagFilter === "__ALL__" || (d.etiqueta || "Sin etiqueta").trim() === tagFilter)
+        .map(d => {
+          const cuotasFiltradas = onlyPending ? d.cuotas.filter(c => !c.pagada) : d.cuotas;
+          return { ...d, cuotasExport: cuotasFiltradas };
+        })
+        .filter(d => d.cuotasExport.length > 0);
+    }
+
+    function renderCardsImage() {
+      const canvas = document.getElementById("cardsCanvas");
+      const ctx = canvas.getContext("2d");
+      const showDetails = document.getElementById("imgShowDetails").checked;
+      const highlightOverdue = document.getElementById("imgHighlightOverdue").checked;
+      const showFooter = document.getElementById("imgShowTotalFooter").checked;
+      const cards = getCardsForImage();
+
+      const W = 1080;
+      const padX = 24;
+      const padY = 24;
+      const gapX = 20;
+      const gapY = 22;
+      const colW = (W - padX * 2 - gapX) / 2;
+      const headerH = 78;
+      const lineH = 44;
+      const bodyPadTop = 22;
+      const bodyPadBottom = 20;
+      const detailLineH = 30;
+      const detailBoxPadY = 12;
+      const detailBoxPadX = 14;
+      const detailMaxTextW = colW - 44 - detailBoxPadX * 2;
+      const fontStack = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+
+      if (cards.length === 0) {
+        canvas.width = W;
+        canvas.height = 260;
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#475569";
+        ctx.font = `700 32px ${fontStack}`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("No hay tarjetas para exportar", W / 2, 130);
+        document.getElementById("imgStatsText").textContent = "0 tarjetas en la imagen";
+        return;
+      }
+
+      // Medir líneas de detalle antes de calcular alturas de cada tarjeta
+      ctx.font = `600 24px ${fontStack}`;
+      const colHeights = [padY, padY];
+      const placed = cards.map(card => {
+        const rows = card.cuotasExport.length;
+        const datesAreaH = Math.max(52, rows * lineH);
+        const detailLines = (showDetails && card.detalles && card.detalles.trim())
+          ? wrapCanvasText(ctx, card.detalles.trim(), detailMaxTextW)
+          : [];
+        const detailBoxH = detailLines.length > 0
+          ? (detailLines.length * detailLineH + detailBoxPadY * 2)
+          : 0;
+        const bodyH = detailLines.length > 0
+          ? (bodyPadTop + datesAreaH + 14 + detailBoxH + 18)
+          : Math.max(96, bodyPadTop + rows * lineH + bodyPadBottom);
+        const h = headerH + bodyH;
+        const col = colHeights[0] <= colHeights[1] ? 0 : 1;
+        const x = padX + col * (colW + gapX);
+        const y = colHeights[col];
+        colHeights[col] += h + gapY;
+        return { card, x, y, w: colW, h, datesAreaH, detailLines, detailBoxH };
+      });
+
+      const footerH = showFooter ? 92 : 0;
+      const totalH = Math.max(colHeights[0], colHeights[1]) - gapY + padY + footerH;
+
+      canvas.width = W;
+      canvas.height = totalH;
+
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, W, totalH);
+
+      placed.forEach(({ card, x, y, w, h, datesAreaH, detailLines, detailBoxH }) => {
+        const radius = 22;
+
+        ctx.fillStyle = "#ffffff";
+        roundRectPath(ctx, x, y, w, h, radius);
+        ctx.fill();
+
+        ctx.save();
+        roundRectPath(ctx, x, y, w, h, radius);
+        ctx.clip();
+        ctx.fillStyle = "#c7dff9";
+        ctx.fillRect(x, y, w, headerH);
+        ctx.restore();
+
+        ctx.strokeStyle = "#0a2254";
+        ctx.lineWidth = 3.5;
+        roundRectPath(ctx, x, y, w, h, radius);
+        ctx.stroke();
+
+        // Recuadro azul oscuro con la DEUDA ENTERA
+        const totalText = formatCleanNum(card.deudaTotal);
+        ctx.font = `900 38px ${fontStack}`;
+        const badgeTextW = ctx.measureText(totalText).width;
+        const badgeW = Math.max(108, badgeTextW + 34);
+        const badgeH = 54;
+        const badgeX = x + w - badgeW - 18;
+        const badgeY = y + (headerH - badgeH) / 2;
+
+        ctx.fillStyle = "#071c47";
+        roundRectPath(ctx, badgeX, badgeY, badgeW, badgeH, 13);
+        ctx.fill();
+
+        ctx.fillStyle = "#ffffff";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(totalText, badgeX + badgeW / 2, badgeY + badgeH / 2 + 1);
+
+        // Nombre del comercio
+        const maxTitleW = badgeX - (x + 22) - 14;
+        let titleSize = 37;
+        ctx.font = `800 ${titleSize}px ${fontStack}`;
+        while (ctx.measureText(card.comercio).width > maxTitleW && titleSize > 23) {
+          titleSize -= 1;
+          ctx.font = `800 ${titleSize}px ${fontStack}`;
+        }
+        ctx.fillStyle = "#081c44";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "middle";
+        ctx.fillText(card.comercio, x + 22, y + headerH / 2 + 1);
+
+        // Monto de cuota + Flecha →
+        const firstQuotaAmount = card.cuotasExport[0]?.monto ?? card.montoCuota ?? 0;
+        const rawDec = Math.round(firstQuotaAmount * 100) % 100;
+        const amountStr = rawDec === 0
+          ? `${Math.round(firstQuotaAmount)} $`
+          : `${formatCleanNum(firstQuotaAmount, rawDec === 60)} $`;
+
+        const firstRowCenterY = y + headerH + bodyPadTop + lineH / 2;
+
+        let amtSize = 40;
+        ctx.font = `800 ${amtSize}px ${fontStack}`;
+        while (ctx.measureText(amountStr).width > 165 && amtSize > 28) {
+          amtSize -= 1;
+          ctx.font = `800 ${amtSize}px ${fontStack}`;
+        }
+        ctx.fillStyle = "#0b2a6b";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "middle";
+        ctx.fillText(amountStr, x + 22, firstRowCenterY);
+
+        const amtW = ctx.measureText(amountStr).width;
+        const arrowStartX = Math.max(x + 22 + amtW + 14, x + 158);
+        const arrowEndX = Math.min(arrowStartX + 48, x + 245);
+        const arrowY = firstRowCenterY;
+
+        ctx.strokeStyle = "#0f172a";
+        ctx.lineWidth = 3.2;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.beginPath();
+        ctx.moveTo(arrowStartX, arrowY);
+        ctx.lineTo(arrowEndX, arrowY);
+        ctx.moveTo(arrowEndX - 11, arrowY - 8);
+        ctx.lineTo(arrowEndX, arrowY);
+        ctx.lineTo(arrowEndX - 11, arrowY + 8);
+        ctx.stroke();
+
+        // Columna de fechas (PAGADAS EN ROJO CON TACHADO ROJO)
+        const dayRightX = x + w - 122;
+        const monthLeftX = x + w - 108;
+
+        card.cuotasExport.forEach((q, idx) => {
+          const rowY = y + headerH + bodyPadTop + idx * lineH + lineH / 2;
+          const dp = formatCardDateParts(q.fecha);
+          const isOverdue = !q.pagada && diffDaysFromToday(q.fecha) < 0;
+
+          ctx.font = `700 34px ${fontStack}`;
+          if (q.pagada) {
+            ctx.fillStyle = "#dc2626";
+          } else if (highlightOverdue && isOverdue) {
+            ctx.fillStyle = "#d97706";
+          } else {
+            ctx.fillStyle = "#0f172a";
+          }
+
+          ctx.textBaseline = "middle";
+          ctx.textAlign = "right";
+          ctx.fillText(dp.day, dayRightX, rowY);
+
+          ctx.textAlign = "left";
+          ctx.fillText(dp.month, monthLeftX, rowY);
+
+          if (q.pagada) {
+            ctx.strokeStyle = "#dc2626";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(dayRightX - 42, rowY);
+            ctx.lineTo(monthLeftX + 78, rowY);
+            ctx.stroke();
+          }
+        });
+
+        // Recuadro de DETALLES visible en la foto para tu amiga
+        if (detailLines.length > 0) {
+          const boxX = x + 22;
+          const boxY = y + headerH + bodyPadTop + datesAreaH + 14;
+          const boxW = w - 44;
+
+          ctx.fillStyle = "#eff6ff";
+          roundRectPath(ctx, boxX, boxY, boxW, detailBoxH, 12);
+          ctx.fill();
+
+          ctx.strokeStyle = "#bfdbfe";
+          ctx.lineWidth = 2;
+          roundRectPath(ctx, boxX, boxY, boxW, detailBoxH, 12);
+          ctx.stroke();
+
+          ctx.fillStyle = "#1e3a8a";
+          ctx.font = `600 24px ${fontStack}`;
+          ctx.textAlign = "left";
+          ctx.textBaseline = "middle";
+
+          detailLines.forEach((line, i) => {
+            const ly = boxY + detailBoxPadY + i * detailLineH + detailLineH / 2;
+            ctx.fillText(line, boxX + detailBoxPadX, ly);
+          });
+        }
+      });
+
+      const totalCuotasSum = cards.reduce((s, c) => s + c.cuotasExport.filter(q => !q.pagada).reduce((a, b) => a + (Number(b.monto) || 0), 0), 0);
+      if (showFooter) {
+        const fy = totalH - footerH + 8;
+        ctx.fillStyle = "#eff6ff";
+        roundRectPath(ctx, padX, fy, W - padX * 2, 64, 16);
+        ctx.fill();
+        ctx.strokeStyle = "#bfdbfe";
+        ctx.lineWidth = 2;
+        roundRectPath(ctx, padX, fy, W - padX * 2, 64, 16);
+        ctx.stroke();
+
+        ctx.fillStyle = "#0b2559";
+        ctx.font = `800 28px ${fontStack}`;
+        ctx.textAlign = "left";
+        ctx.textBaseline = "middle";
+        ctx.fillText(`Total cuotas pendientes (${cards.length} tarjetas):`, padX + 24, fy + 32);
+
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#1d4ed8";
+        ctx.font = `900 32px ${fontStack}`;
+        ctx.fillText(formatMoney(totalCuotasSum), W - padX - 24, fy + 32);
+      }
+
+      const totalQuotasCount = cards.reduce((s, c) => s + c.cuotasExport.length, 0);
+      document.getElementById("imgStatsText").textContent =
+        `${cards.length} tarjetas · ${totalQuotasCount} cuotas mostradas · Total pendiente: ${formatMoney(totalCuotasSum)}`;
+    }
+
+    function downloadCardsPng() {
+      renderCardsImage();
+      const canvas = document.getElementById("cardsCanvas");
+      const a = document.createElement("a");
+      a.download = `tarjetas-cashea-${todayISO()}.png`;
+      a.href = canvas.toDataURL("image/png");
+      a.click();
+      showToast("Imagen PNG descargada");
+    }
+
+    async function shareCardsPng() {
+      renderCardsImage();
+      const canvas = document.getElementById("cardsCanvas");
+      canvas.toBlob(async blob => {
+        if (!blob) return;
+        const file = new File([blob], `tarjetas-cashea-${todayISO()}.png`, { type: "image/png" });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              title: "Pagos Cashea",
+              text: "Aquí tienes las tarjetas actualizadas de Cashea.",
+              files: [file]
+            });
+            showToast("Imagen lista para enviar");
+            return;
+          } catch (err) {
+            if (err.name === "AbortError") return;
+          }
+        }
+        downloadCardsPng();
+        showToast("Descargada — ahora adjúntala en WhatsApp");
+      }, "image/png");
+    }
+
+    ["imgFilterTag", "imgShowDetails", "imgOnlyPending", "imgHighlightOverdue", "imgShowTotalFooter"].forEach(id => {
+      document.getElementById(id).addEventListener("change", renderCardsImage);
+    });
+    document.getElementById("btnDownloadImg").addEventListener("click", downloadCardsPng);
+    document.getElementById("btnShareImg").addEventListener("click", shareCardsPng);
+
+    /* =====================================================================
+       ACCIONES SOBRE TARJETAS Y CUOTAS
+    ===================================================================== */
+    function toggleQuotaPaid(debtId, quotaIndex) {
+      const debt = debts.find(d => d.id === debtId);
+      if (!debt || !debt.cuotas[quotaIndex]) return;
+      debt.cuotas[quotaIndex].pagada = !debt.cuotas[quotaIndex].pagada;
+      saveDebts();
+      renderAll();
+      showToast(debt.cuotas[quotaIndex].pagada ? "Cuota marcada como pagada" : "Cuota devuelta a pendiente");
+    }
+
+    function deleteDebt(debtId) {
+      const debt = debts.find(d => d.id === debtId);
+      if (!debt) return;
+      if (!confirm(`¿Eliminar la tarjeta "${debt.comercio}" (${formatCleanNum(debt.deudaTotal)})?`)) return;
+      debts = debts.filter(d => d.id !== debtId);
+      saveDebts();
+      renderAll();
+      showToast("Tarjeta eliminada");
+    }
+
+    function jumpToAlerts(filter) {
+      currentDebtFilter = filter;
+      document.querySelectorAll("#debtFilterChips .chip").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.filter === filter);
+      });
+      switchView("deudas");
+    }
+
+    /* =====================================================================
+       FORMULARIO CREAR / EDITAR
+    ===================================================================== */
+    function generateDraftQuotas() {
+      const quotaAmount = parseFloat(document.getElementById("fQuotaAmount").value) || 0;
+      const count = parseInt(document.getElementById("fQuotas").value, 10) || 3;
+      const freq = parseInt(document.getElementById("fFreq").value, 10) || 14;
+      const firstDate = document.getElementById("fFirstDate").value || todayISO();
+
+      draftQuotas = Array.from({ length: count }, (_, idx) => ({
+        numero: idx + 1,
+        monto: Math.round(quotaAmount * 100) / 100,
+        fecha: addDaysISO(firstDate, idx * freq),
+        pagada: false
+      }));
+      renderQuotaPreview();
+    }
+
+    function renderQuotaPreview() {
+      const box = document.getElementById("quotaPreviewList");
+      if (!draftQuotas.length) {
+        box.innerHTML = `<span class="help-text">Completa cuota y fecha para ver las fechas.</span>`;
+        return;
+      }
+      box.innerHTML = draftQuotas.map((q, idx) => `
+        <div class="preview-item">
+          <span style="font-weight:700; min-width:56px;">Cuota ${q.numero}</span>
+          <input type="date" value="${q.fecha}" onchange="updateDraftQuota(${idx}, 'fecha', this.value)" />
+          <input type="number" step="0.01" min="0" value="${Number(q.monto).toFixed(2)}" style="max-width:88px;"
+            onchange="updateDraftQuota(${idx}, 'monto', this.value)" />
+        </div>
+      `).join("");
+    }
+
+    function updateDraftQuota(idx, field, val) {
+      if (!draftQuotas[idx]) return;
+      draftQuotas[idx][field] = field === "monto" ? (parseFloat(val) || 0) : val;
+    }
+
+    function resetForm() {
+      document.getElementById("editDebtId").value = "";
+      document.getElementById("formTitle").textContent = "Registrar compra / tarjeta Cashea";
+      document.getElementById("btnSaveDebt").textContent = "Guardar tarjeta";
+      document.getElementById("btnCancelEdit").style.display = "none";
+      document.getElementById("debtForm").reset();
+      document.getElementById("fFirstDate").value = todayISO();
+      document.getElementById("fQuotas").value = "3";
+      document.getElementById("fFreq").value = "14";
+      document.getElementById("fTag").value = "Amiga";
+      draftQuotas = [];
+      generateDraftQuotas();
+    }
+
+    function startEditDebt(debtId) {
+      const debt = debts.find(d => d.id === debtId);
+      if (!debt) return;
+      document.getElementById("editDebtId").value = debt.id;
+      document.getElementById("formTitle").textContent = "Editar tarjeta Cashea";
+      document.getElementById("btnSaveDebt").textContent = "Guardar cambios";
+      document.getElementById("btnCancelEdit").style.display = "inline-flex";
+      document.getElementById("fStore").value = debt.comercio;
+      document.getElementById("fTotal").value = Number(debt.deudaTotal);
+      document.getElementById("fQuotaAmount").value = Number(debt.cuotas[0]?.monto ?? debt.montoCuota ?? 0);
+      document.getElementById("fTag").value = debt.etiqueta || "";
+      document.getElementById("fDetails").value = debt.detalles || "";
+      document.getElementById("fQuotas").value = String(debt.cuotas.length);
+      document.getElementById("fFirstDate").value = debt.cuotas[0]?.fecha || todayISO();
+      draftQuotas = debt.cuotas.map(c => ({ ...c }));
+      renderQuotaPreview();
+      switchView("nueva");
+    }
+
+    document.getElementById("btnAutoSplit").addEventListener("click", () => {
+      const total = parseFloat(document.getElementById("fTotal").value) || 0;
+      const count = parseInt(document.getElementById("fQuotas").value, 10) || 1;
+      if (total > 0) {
+        const each = Math.round((total / count) * 100) / 100;
+        document.getElementById("fQuotaAmount").value = each;
+        generateDraftQuotas();
+      }
+    });
+
+    ["fQuotaAmount", "fQuotas", "fFreq", "fFirstDate"].forEach(id => {
+      document.getElementById(id).addEventListener("input", generateDraftQuotas);
+    });
+
+    document.getElementById("btnCancelEdit").addEventListener("click", () => {
+      resetForm();
+      switchView("deudas");
+    });
+
+    document.getElementById("debtForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const editId = document.getElementById("editDebtId").value;
+      const comercio = document.getElementById("fStore").value.trim();
+      const deudaTotal = parseFloat(document.getElementById("fTotal").value);
+      const montoCuota = parseFloat(document.getElementById("fQuotaAmount").value);
+      const etiqueta = document.getElementById("fTag").value.trim() || "Amiga";
+      const detalles = document.getElementById("fDetails").value.trim();
+
+      if (!comercio || !(deudaTotal > 0) || !(montoCuota > 0)) {
+        showToast("Completa comercio, deuda entera y cuota");
+        return;
+      }
+
+      if (!draftQuotas.length) generateDraftQuotas();
+
+      const payload = {
+        id: editId || ("cashea-" + Date.now()),
+        comercio,
+        etiqueta,
+        detalles,
+        deudaTotal: Math.round(deudaTotal * 100) / 100,
+        montoCuota: Math.round(montoCuota * 100) / 100,
+        cuotas: draftQuotas.map((q, i) => ({
+          numero: i + 1,
+          monto: Math.round((Number(q.monto) || montoCuota) * 100) / 100,
+          fecha: q.fecha,
+          pagada: !!q.pagada
+        }))
+      };
+
+      if (editId) {
+        const idx = debts.findIndex(d => d.id === editId);
+        if (idx !== -1) debts[idx] = payload;
+        showToast("Tarjeta actualizada");
+      } else {
+        debts.push(payload);
+        showToast("Tarjeta guardada");
+      }
+
+      saveDebts();
+      resetForm();
+      renderAll();
+      switchView("deudas");
+    });
+
+    /* =====================================================================
+       NAVEGACIÓN Y FILTROS
+    ===================================================================== */
+    function switchView(viewName) {
+      currentView = viewName;
+      document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+      document.getElementById("view-" + viewName).classList.add("active");
+      document.querySelectorAll(".nav-item").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.view === viewName);
+      });
+      if (viewName === "imagen") {
+        refreshImageTagFilter();
+        renderCardsImage();
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    document.querySelectorAll(".nav-item").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (btn.dataset.view === "nueva" && !document.getElementById("editDebtId").value) {
+          resetForm();
+        }
+        switchView(btn.dataset.view);
+      });
+    });
+
+    document.querySelectorAll("#paymentRangeTabs .seg-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        currentPaymentRange = btn.dataset.range;
+        document.querySelectorAll("#paymentRangeTabs .seg-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderPaymentsView(getAllInstallments());
+      });
+    });
+
+    document.querySelectorAll("#debtFilterChips .chip").forEach(btn => {
+      btn.addEventListener("click", () => {
+        currentDebtFilter = btn.dataset.filter;
+        document.querySelectorAll("#debtFilterChips .chip").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderDebtsView();
+      });
+    });
+
+    document.getElementById("searchDebts").addEventListener("input", renderDebtsView);
+
+    /* =====================================================================
+       RESPALDO JSON (EXPORTAR / IMPORTAR)
+    ===================================================================== */
+    function exportBackup() {
+      const backup = {
+        app: "Pagos cashea Edward",
+        version: 2,
+        exportedAt: new Date().toISOString(),
+        debts
+      };
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `pagos-cashea-edward-${todayISO()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast("Copia JSON descargada");
+    }
+
+    document.getElementById("btnExportJson").addEventListener("click", exportBackup);
+    document.getElementById("btnImportTrigger").addEventListener("click", () => {
+      document.getElementById("importFileInput").click();
+    });
+
+    document.getElementById("importFileInput").addEventListener("change", e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try {
+          const parsed = JSON.parse(ev.target.result);
+          const importedDebts = Array.isArray(parsed) ? parsed : parsed.debts;
+          if (!Array.isArray(importedDebts)) throw new Error("Formato inválido");
+          if (!confirm(`Se importarán ${importedDebts.length} tarjetas y se reemplazarán los datos actuales. ¿Continuar?`)) {
+            e.target.value = "";
+            return;
+          }
+          debts = importedDebts;
+          saveDebts();
+          renderAll();
+          showToast("Copia importada con éxito");
+          switchView("deudas");
+        } catch {
+          alert("El archivo JSON no es válido.");
+        }
+        e.target.value = "";
+      };
+      reader.readAsText(file);
+    });
+
+    document.getElementById("btnRestoreDemo").addEventListener("click", () => {
+      if (!confirm("¿Restaurar las 11 tarjetas precargadas?")) return;
+      debts = buildPreloadedDebts();
+      saveDebts();
+      renderAll();
+      showToast("11 tarjetas restauradas");
+      switchView("imagen");
+    });
+
+    document.getElementById("btnClearAll").addEventListener("click", () => {
+      if (!confirm("¿Seguro que deseas borrar TODAS las tarjetas?")) return;
+      debts = [];
+      saveDebts();
+      renderAll();
+      showToast("Tarjetas borradas");
+    });
+
+    /* =====================================================================
+       ICONOS PWA + SERVICE WORKER + TOAST
+    ===================================================================== */
+    function downloadPwaIcon(size) {
+      const canvas = document.createElement("canvas");
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+
+      const grad = ctx.createLinearGradient(0, 0, size, size);
+      grad.addColorStop(0, "#0b2559");
+      grad.addColorStop(1, "#2563eb");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, size, size);
+
+      const pad = size * 0.14;
+      ctx.strokeStyle = "rgba(255,255,255,0.28)";
+      ctx.lineWidth = size * 0.025;
+      roundRectPath(ctx, pad, pad, size - pad * 2, size - pad * 2, size * 0.14);
+      ctx.stroke();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = `900 ${Math.round(size * 0.34)}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("CE", size / 2, size * 0.45);
+
+      ctx.fillStyle = "#c7dff9";
+      ctx.font = `800 ${Math.round(size * 0.095)}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+      ctx.fillText("CASHEA", size / 2, size * 0.72);
+
+      const a = document.createElement("a");
+      a.download = `icon-${size}.png`;
+      a.href = canvas.toDataURL("image/png");
+      a.click();
+      showToast(`icon-${size}.png descargado`);
+    }
+
+    let toastTimer;
+    function showToast(msg) {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove("show"), 2500);
+    }
+
+    function updateOnlineStatus() {
+      document.getElementById("offlinePill").classList.toggle("show", !navigator.onLine);
+    }
+    window.addEventListener("online", updateOnlineStatus);
+    window.addEventListener("offline", updateOnlineStatus);
+
+    window.addEventListener("beforeinstallprompt", e => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      document.getElementById("btnInstallPwa").classList.add("show");
+    });
+
+    document.getElementById("btnInstallPwa").addEventListener("click", async () => {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      const { outcome } = await deferredInstallPrompt.userChoice;
+      if (outcome === "accepted") {
+        document.getElementById("btnInstallPwa").classList.remove("show");
+        showToast("Instalando Pagos cashea Edward...");
+      }
+      deferredInstallPrompt = null;
+    });
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(err => console.warn("SW:", err));
+      });
+    }
+
+    /* =====================================================================
+       INICIO
+    ===================================================================== */
+    initTheme();
+    updateOnlineStatus();
+    resetForm();
+    renderAll();
+  </script>
+</body>
+</html>
