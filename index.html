@@ -1000,7 +1000,7 @@
       <div class="card-box">
         <h2>Exportar tarjetas en imagen (PNG)</h2>
         <p class="help-text" style="margin-bottom:12px;">
-          Genera la hoja de tarjetas azul y blanca con las cuotas pagadas en rojo y los detalles visibles para enviar directo por WhatsApp.
+          Formato compacto con pastillas de fecha (3 por fila), cuotas pagadas en rojo y detalles visibles para enviar directo por WhatsApp.
         </p>
 
         <div class="form-group">
@@ -1289,7 +1289,7 @@
     }
 
     /* =====================================================================
-       DATOS PRECARGADOS (Las 11 tarjetas exactas)
+       DATOS PRECARGADOS (Las 11 tarjetas base)
     ===================================================================== */
     function makeCard(id, comercio, deudaTotal, montoCuota, fechas, etiqueta = "Amiga", detalles = "") {
       return {
@@ -1721,7 +1721,7 @@
     }
 
     /* =====================================================================
-       GENERADOR DE IMAGEN PNG (PAGADAS EN ROJO + DETALLES VISIBLES)
+       GENERADOR DE IMAGEN PNG — OPCIÓN 3 COMPACTA (PASTILLAS 3 POR FILA)
     ===================================================================== */
     function refreshImageTagFilter() {
       const sel = document.getElementById("imgFilterTag");
@@ -1807,74 +1807,95 @@
       const cards = getCardsForImage();
 
       const W = 1080;
-      const padX = 24;
-      const padY = 24;
-      const gapX = 20;
-      const gapY = 22;
-      const colW = (W - padX * 2 - gapX) / 2;
-      const headerH = 78;
-      const lineH = 44;
-      const bodyPadTop = 22;
-      const bodyPadBottom = 20;
-      const detailLineH = 30;
-      const detailBoxPadY = 12;
-      const detailBoxPadX = 14;
-      const detailMaxTextW = colW - 44 - detailBoxPadX * 2;
+      const padX = 20;
+      const padY = 20;
+      const gapX = 16;
+      const gapY = 16;
+      const colW = (W - padX * 2 - gapX) / 2; // 512px
+
+      // Medidas compactas de cada tarjeta
+      const headerH = 64;
+      const innerPadX = 16;
+      const quotaBarH = 36;
+      const topGapAfterHeader = 10;
+      const gapAfterQuotaBar = 8;
+      const pillCols = 3;
+      const pillGapX = 9;
+      const pillGapY = 9;
+      const pillH = 44;
+      const innerW = colW - innerPadX * 2; // 480px
+      const pillW = (innerW - pillGapX * (pillCols - 1)) / pillCols; // 154px
+      const detailLineH = 26;
+      const detailPadY = 8;
+      const detailPadX = 12;
+      const detailMaxW = innerW - detailPadX * 2;
+      const bottomPad = 14;
       const fontStack = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 
       if (cards.length === 0) {
         canvas.width = W;
-        canvas.height = 260;
+        canvas.height = 240;
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#475569";
         ctx.font = `700 32px ${fontStack}`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText("No hay tarjetas para exportar", W / 2, 130);
+        ctx.fillText("No hay tarjetas para exportar", W / 2, 120);
         document.getElementById("imgStatsText").textContent = "0 tarjetas en la imagen";
         return;
       }
 
-      // Medir líneas de detalle antes de calcular alturas de cada tarjeta
-      ctx.font = `600 24px ${fontStack}`;
+      // Calcular alturas compactas en 2 columnas balanceadas
+      ctx.font = `600 22px ${fontStack}`;
       const colHeights = [padY, padY];
       const placed = cards.map(card => {
-        const rows = card.cuotasExport.length;
-        const datesAreaH = Math.max(52, rows * lineH);
+        const pillRows = Math.ceil(card.cuotasExport.length / pillCols);
+        const pillsBlockH = pillRows * pillH + Math.max(0, pillRows - 1) * pillGapY;
         const detailLines = (showDetails && card.detalles && card.detalles.trim())
-          ? wrapCanvasText(ctx, card.detalles.trim(), detailMaxTextW)
+          ? wrapCanvasText(ctx, card.detalles.trim(), detailMaxW)
           : [];
         const detailBoxH = detailLines.length > 0
-          ? (detailLines.length * detailLineH + detailBoxPadY * 2)
+          ? (detailLines.length * detailLineH + detailPadY * 2)
           : 0;
-        const bodyH = detailLines.length > 0
-          ? (bodyPadTop + datesAreaH + 14 + detailBoxH + 18)
-          : Math.max(96, bodyPadTop + rows * lineH + bodyPadBottom);
-        const h = headerH + bodyH;
+        const detailGap = detailLines.length > 0 ? 10 : 0;
+
+        const h = headerH
+          + topGapAfterHeader
+          + quotaBarH
+          + gapAfterQuotaBar
+          + pillsBlockH
+          + detailGap
+          + detailBoxH
+          + bottomPad;
+
         const col = colHeights[0] <= colHeights[1] ? 0 : 1;
         const x = padX + col * (colW + gapX);
         const y = colHeights[col];
         colHeights[col] += h + gapY;
-        return { card, x, y, w: colW, h, datesAreaH, detailLines, detailBoxH };
+
+        return { card, x, y, w: colW, h, pillsBlockH, detailLines, detailBoxH };
       });
 
-      const footerH = showFooter ? 92 : 0;
+      const footerH = showFooter ? 86 : 0;
       const totalH = Math.max(colHeights[0], colHeights[1]) - gapY + padY + footerH;
 
       canvas.width = W;
       canvas.height = totalH;
 
+      // Fondo blanco puro
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, W, totalH);
 
-      placed.forEach(({ card, x, y, w, h, datesAreaH, detailLines, detailBoxH }) => {
-        const radius = 22;
+      placed.forEach(({ card, x, y, w, h, pillsBlockH, detailLines, detailBoxH }) => {
+        const radius = 18;
 
+        // Fondo de tarjeta
         ctx.fillStyle = "#ffffff";
         roundRectPath(ctx, x, y, w, h, radius);
         ctx.fill();
 
+        // Cabecera azul claro
         ctx.save();
         roundRectPath(ctx, x, y, w, h, radius);
         ctx.clip();
@@ -1882,22 +1903,23 @@
         ctx.fillRect(x, y, w, headerH);
         ctx.restore();
 
+        // Borde azul marino
         ctx.strokeStyle = "#0a2254";
-        ctx.lineWidth = 3.5;
+        ctx.lineWidth = 3.2;
         roundRectPath(ctx, x, y, w, h, radius);
         ctx.stroke();
 
-        // Recuadro azul oscuro con la DEUDA ENTERA
+        // Recuadro azul oscuro con DEUDA ENTERA
         const totalText = formatCleanNum(card.deudaTotal);
-        ctx.font = `900 38px ${fontStack}`;
+        ctx.font = `900 33px ${fontStack}`;
         const badgeTextW = ctx.measureText(totalText).width;
-        const badgeW = Math.max(108, badgeTextW + 34);
-        const badgeH = 54;
-        const badgeX = x + w - badgeW - 18;
+        const badgeW = Math.max(94, badgeTextW + 28);
+        const badgeH = 44;
+        const badgeX = x + w - badgeW - 14;
         const badgeY = y + (headerH - badgeH) / 2;
 
         ctx.fillStyle = "#071c47";
-        roundRectPath(ctx, badgeX, badgeY, badgeW, badgeH, 13);
+        roundRectPath(ctx, badgeX, badgeY, badgeW, badgeH, 11);
         ctx.fill();
 
         ctx.fillStyle = "#ffffff";
@@ -1906,138 +1928,167 @@
         ctx.fillText(totalText, badgeX + badgeW / 2, badgeY + badgeH / 2 + 1);
 
         // Nombre del comercio
-        const maxTitleW = badgeX - (x + 22) - 14;
-        let titleSize = 37;
+        const maxTitleW = badgeX - (x + innerPadX) - 12;
+        let titleSize = 33;
         ctx.font = `800 ${titleSize}px ${fontStack}`;
-        while (ctx.measureText(card.comercio).width > maxTitleW && titleSize > 23) {
+        while (ctx.measureText(card.comercio).width > maxTitleW && titleSize > 21) {
           titleSize -= 1;
           ctx.font = `800 ${titleSize}px ${fontStack}`;
         }
         ctx.fillStyle = "#081c44";
         ctx.textAlign = "left";
         ctx.textBaseline = "middle";
-        ctx.fillText(card.comercio, x + 22, y + headerH / 2 + 1);
+        ctx.fillText(card.comercio, x + innerPadX, y + headerH / 2 + 1);
 
-        // Monto de cuota + Flecha →
+        // Fila compacta de cuota (ej: "Cuota: 17.60 $ →")
+        const quotaRowCenterY = y + headerH + topGapAfterHeader + quotaBarH / 2;
         const firstQuotaAmount = card.cuotasExport[0]?.monto ?? card.montoCuota ?? 0;
         const rawDec = Math.round(firstQuotaAmount * 100) % 100;
         const amountStr = rawDec === 0
           ? `${Math.round(firstQuotaAmount)} $`
           : `${formatCleanNum(firstQuotaAmount, rawDec === 60)} $`;
 
-        const firstRowCenterY = y + headerH + bodyPadTop + lineH / 2;
-
-        let amtSize = 40;
-        ctx.font = `800 ${amtSize}px ${fontStack}`;
-        while (ctx.measureText(amountStr).width > 165 && amtSize > 28) {
-          amtSize -= 1;
-          ctx.font = `800 ${amtSize}px ${fontStack}`;
-        }
-        ctx.fillStyle = "#0b2a6b";
+        ctx.font = `700 24px ${fontStack}`;
+        ctx.fillStyle = "#475569";
         ctx.textAlign = "left";
         ctx.textBaseline = "middle";
-        ctx.fillText(amountStr, x + 22, firstRowCenterY);
+        const labelTxt = "Cuota:";
+        ctx.fillText(labelTxt, x + innerPadX, quotaRowCenterY);
+        const labelW = ctx.measureText(labelTxt).width;
 
+        ctx.font = `900 31px ${fontStack}`;
+        ctx.fillStyle = "#0b2a6b";
+        const amtX = x + innerPadX + labelW + 10;
+        ctx.fillText(amountStr, amtX, quotaRowCenterY);
         const amtW = ctx.measureText(amountStr).width;
-        const arrowStartX = Math.max(x + 22 + amtW + 14, x + 158);
-        const arrowEndX = Math.min(arrowStartX + 48, x + 245);
-        const arrowY = firstRowCenterY;
 
-        ctx.strokeStyle = "#0f172a";
-        ctx.lineWidth = 3.2;
+        // Flecha corta al lado del monto
+        const arrowStartX = amtX + amtW + 12;
+        const arrowEndX = arrowStartX + 30;
+        ctx.strokeStyle = "#1e3a8a";
+        ctx.lineWidth = 2.8;
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
         ctx.beginPath();
-        ctx.moveTo(arrowStartX, arrowY);
-        ctx.lineTo(arrowEndX, arrowY);
-        ctx.moveTo(arrowEndX - 11, arrowY - 8);
-        ctx.lineTo(arrowEndX, arrowY);
-        ctx.lineTo(arrowEndX - 11, arrowY + 8);
+        ctx.moveTo(arrowStartX, quotaRowCenterY);
+        ctx.lineTo(arrowEndX, quotaRowCenterY);
+        ctx.moveTo(arrowEndX - 8, quotaRowCenterY - 6);
+        ctx.lineTo(arrowEndX, quotaRowCenterY);
+        ctx.lineTo(arrowEndX - 8, quotaRowCenterY + 6);
         ctx.stroke();
 
-        // Columna de fechas (PAGADAS EN ROJO CON TACHADO ROJO)
-        const dayRightX = x + w - 122;
-        const monthLeftX = x + w - 108;
+        // Contador discreto de pendientes a la derecha de la fila de cuota
+        const pendingInCard = card.cuotasExport.filter(q => !q.pagada).length;
+        const totalShown = card.cuotasExport.length;
+        const countTxt = pendingInCard === 0
+          ? "Pagada"
+          : `${pendingInCard}/${totalShown} pend.`;
+        ctx.font = `700 21px ${fontStack}`;
+        ctx.fillStyle = pendingInCard === 0 ? "#dc2626" : "#64748b";
+        ctx.textAlign = "right";
+        ctx.fillText(countTxt, x + w - innerPadX, quotaRowCenterY);
 
+        // Pastillas de fecha (3 por fila)
+        const pillsStartY = y + headerH + topGapAfterHeader + quotaBarH + gapAfterQuotaBar;
         card.cuotasExport.forEach((q, idx) => {
-          const rowY = y + headerH + bodyPadTop + idx * lineH + lineH / 2;
+          const r = Math.floor(idx / pillCols);
+          const c = idx % pillCols;
+          const px = x + innerPadX + c * (pillW + pillGapX);
+          const py = pillsStartY + r * (pillH + pillGapY);
           const dp = formatCardDateParts(q.fecha);
+          const dateTxt = `${dp.day} ${dp.month}`;
           const isOverdue = !q.pagada && diffDaysFromToday(q.fecha) < 0;
 
-          ctx.font = `700 34px ${fontStack}`;
+          let bg = "#f1f6fd";
+          let stroke = "#bfd7f7";
+          let txtColor = "#0f172a";
+
           if (q.pagada) {
-            ctx.fillStyle = "#dc2626";
+            bg = "#fee2e2";
+            stroke = "#fca5a5";
+            txtColor = "#dc2626";
           } else if (highlightOverdue && isOverdue) {
-            ctx.fillStyle = "#d97706";
-          } else {
-            ctx.fillStyle = "#0f172a";
+            bg = "#fef3c7";
+            stroke = "#fbbf24";
+            txtColor = "#b45309";
           }
 
-          ctx.textBaseline = "middle";
-          ctx.textAlign = "right";
-          ctx.fillText(dp.day, dayRightX, rowY);
+          ctx.fillStyle = bg;
+          roundRectPath(ctx, px, py, pillW, pillH, 11);
+          ctx.fill();
 
-          ctx.textAlign = "left";
-          ctx.fillText(dp.month, monthLeftX, rowY);
+          ctx.strokeStyle = stroke;
+          ctx.lineWidth = 2;
+          roundRectPath(ctx, px, py, pillW, pillH, 11);
+          ctx.stroke();
+
+          ctx.font = `800 25px ${fontStack}`;
+          ctx.fillStyle = txtColor;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          const cx = px + pillW / 2;
+          const cy = py + pillH / 2 + 1;
+          ctx.fillText(dateTxt, cx, cy);
 
           if (q.pagada) {
+            const tw = ctx.measureText(dateTxt).width;
             ctx.strokeStyle = "#dc2626";
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 2.8;
             ctx.beginPath();
-            ctx.moveTo(dayRightX - 42, rowY);
-            ctx.lineTo(monthLeftX + 78, rowY);
+            ctx.moveTo(cx - tw / 2 - 5, cy - 1);
+            ctx.lineTo(cx + tw / 2 + 5, cy - 1);
             ctx.stroke();
           }
         });
 
-        // Recuadro de DETALLES visible en la foto para tu amiga
+        // Línea compacta de DETALLES al pie (todo el ancho de la tarjeta)
         if (detailLines.length > 0) {
-          const boxX = x + 22;
-          const boxY = y + headerH + bodyPadTop + datesAreaH + 14;
-          const boxW = w - 44;
+          const boxX = x + innerPadX;
+          const boxY = pillsStartY + pillsBlockH + 10;
+          const boxW = innerW;
 
           ctx.fillStyle = "#eff6ff";
-          roundRectPath(ctx, boxX, boxY, boxW, detailBoxH, 12);
+          roundRectPath(ctx, boxX, boxY, boxW, detailBoxH, 10);
           ctx.fill();
 
           ctx.strokeStyle = "#bfdbfe";
-          ctx.lineWidth = 2;
-          roundRectPath(ctx, boxX, boxY, boxW, detailBoxH, 12);
+          ctx.lineWidth = 1.8;
+          roundRectPath(ctx, boxX, boxY, boxW, detailBoxH, 10);
           ctx.stroke();
 
           ctx.fillStyle = "#1e3a8a";
-          ctx.font = `600 24px ${fontStack}`;
+          ctx.font = `600 22px ${fontStack}`;
           ctx.textAlign = "left";
           ctx.textBaseline = "middle";
 
           detailLines.forEach((line, i) => {
-            const ly = boxY + detailBoxPadY + i * detailLineH + detailLineH / 2;
-            ctx.fillText(line, boxX + detailBoxPadX, ly);
+            const ly = boxY + detailPadY + i * detailLineH + detailLineH / 2;
+            ctx.fillText(line, boxX + detailPadX, ly);
           });
         }
       });
 
       const totalCuotasSum = cards.reduce((s, c) => s + c.cuotasExport.filter(q => !q.pagada).reduce((a, b) => a + (Number(b.monto) || 0), 0), 0);
       if (showFooter) {
-        const fy = totalH - footerH + 8;
+        const fy = totalH - footerH + 6;
         ctx.fillStyle = "#eff6ff";
-        roundRectPath(ctx, padX, fy, W - padX * 2, 64, 16);
+        roundRectPath(ctx, padX, fy, W - padX * 2, 60, 14);
         ctx.fill();
         ctx.strokeStyle = "#bfdbfe";
         ctx.lineWidth = 2;
-        roundRectPath(ctx, padX, fy, W - padX * 2, 64, 16);
+        roundRectPath(ctx, padX, fy, W - padX * 2, 60, 14);
         ctx.stroke();
 
         ctx.fillStyle = "#0b2559";
-        ctx.font = `800 28px ${fontStack}`;
+        ctx.font = `800 26px ${fontStack}`;
         ctx.textAlign = "left";
         ctx.textBaseline = "middle";
-        ctx.fillText(`Total cuotas pendientes (${cards.length} tarjetas):`, padX + 24, fy + 32);
+        ctx.fillText(`Total cuotas pendientes (${cards.length} tarjetas):`, padX + 20, fy + 30);
 
         ctx.textAlign = "right";
         ctx.fillStyle = "#1d4ed8";
-        ctx.font = `900 32px ${fontStack}`;
-        ctx.fillText(formatMoney(totalCuotasSum), W - padX - 24, fy + 32);
+        ctx.font = `900 30px ${fontStack}`;
+        ctx.fillText(formatMoney(totalCuotasSum), W - padX - 20, fy + 30);
       }
 
       const totalQuotasCount = cards.reduce((s, c) => s + c.cuotasExport.length, 0);
