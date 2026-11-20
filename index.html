@@ -1000,7 +1000,7 @@
       <div class="card-box">
         <h2>Exportar tarjetas en imagen (PNG)</h2>
         <p class="help-text" style="margin-bottom:12px;">
-          Formato compacto con pastillas de fecha (3 por fila), cuotas pagadas en rojo y detalles visibles para enviar directo por WhatsApp.
+          Incluye el encabezado con el resumen de pagos de la semana, tarjetas compactas en pastillas, pagadas en rojo y detalles visibles.
         </p>
 
         <div class="form-group">
@@ -1008,6 +1008,10 @@
           <select id="imgFilterTag"></select>
         </div>
 
+        <div class="switch-row">
+          <span>Mostrar resumen de la semana arriba</span>
+          <input type="checkbox" id="imgShowWeeklyHeader" checked />
+        </div>
         <div class="switch-row">
           <span>Mostrar detalles en cada tarjeta</span>
           <input type="checkbox" id="imgShowDetails" checked />
@@ -1277,6 +1281,13 @@
       const two = n.toFixed(2);
       if (keepTwoDecimalsIfTenth) return two;
       return two.endsWith("0") ? n.toFixed(1) : two;
+    }
+
+    function formatQuotaMoney(num) {
+      const rawDec = Math.round((Number(num) || 0) * 100) % 100;
+      return rawDec === 0
+        ? `${Math.round(num)} $`
+        : `${formatCleanNum(num, rawDec === 60)} $`;
     }
 
     function esc(str) {
@@ -1721,7 +1732,7 @@
     }
 
     /* =====================================================================
-       GENERADOR DE IMAGEN PNG — OPCIÓN 3 COMPACTA (PASTILLAS 3 POR FILA)
+       GENERADOR DE IMAGEN PNG — ENCABEZADO SEMANAL + TARJETAS EN PASTILLAS
     ===================================================================== */
     function refreshImageTagFilter() {
       const sel = document.getElementById("imgFilterTag");
@@ -1749,6 +1760,16 @@
       ctx.lineTo(x, y + rr.tl);
       ctx.quadraticCurveTo(x, y, x + rr.tl, y);
       ctx.closePath();
+    }
+
+    function fitCanvasText(ctx, text, maxWidth) {
+      const str = String(text || "");
+      if (ctx.measureText(str).width <= maxWidth) return str;
+      let t = str;
+      while (t.length > 1 && ctx.measureText(t + "…").width > maxWidth) {
+        t = t.slice(0, -1);
+      }
+      return t + "…";
     }
 
     function wrapCanvasText(ctx, text, maxWidth) {
@@ -1785,12 +1806,14 @@
       return lines;
     }
 
-    function getCardsForImage() {
+    function getFilteredDebtsForImage() {
       const tagFilter = document.getElementById("imgFilterTag").value;
-      const onlyPending = document.getElementById("imgOnlyPending").checked;
+      return debts.filter(d => tagFilter === "__ALL__" || (d.etiqueta || "Sin etiqueta").trim() === tagFilter);
+    }
 
-      return debts
-        .filter(d => tagFilter === "__ALL__" || (d.etiqueta || "Sin etiqueta").trim() === tagFilter)
+    function getCardsForImage() {
+      const onlyPending = document.getElementById("imgOnlyPending").checked;
+      return getFilteredDebtsForImage()
         .map(d => {
           const cuotasFiltradas = onlyPending ? d.cuotas.filter(c => !c.pagada) : d.cuotas;
           return { ...d, cuotasExport: cuotasFiltradas };
@@ -1798,13 +1821,36 @@
         .filter(d => d.cuotasExport.length > 0);
     }
 
+    function getWeeklyItemsForImage() {
+      const items = [];
+      getFilteredDebtsForImage().forEach(d => {
+        d.cuotas.forEach(c => {
+          if (c.pagada) return;
+          const diff = diffDaysFromToday(c.fecha);
+          if (diff <= 7) {
+            items.push({
+              comercio: d.comercio,
+              fecha: c.fecha,
+              monto: Number(c.monto) || 0,
+              diff
+            });
+          }
+        });
+      });
+      return items.sort((a, b) => a.fecha.localeCompare(b.fecha) || a.comercio.localeCompare(b.comercio));
+    }
+
     function renderCardsImage() {
       const canvas = document.getElementById("cardsCanvas");
       const ctx = canvas.getContext("2d");
+      const showWeeklyHeader = document.getElementById("imgShowWeeklyHeader").checked;
       const showDetails = document.getElementById("imgShowDetails").checked;
       const highlightOverdue = document.getElementById("imgHighlightOverdue").checked;
       const showFooter = document.getElementById("imgShowTotalFooter").checked;
+
       const cards = getCardsForImage();
+      const weeklyItems = showWeeklyHeader ? getWeeklyItemsForImage() : [];
+      const weeklySum = weeklyItems.reduce((s, i) => s + i.monto, 0);
 
       const W = 1080;
       const padX = 20;
@@ -1813,7 +1859,7 @@
       const gapY = 16;
       const colW = (W - padX * 2 - gapX) / 2; // 512px
 
-      // Medidas compactas de cada tarjeta
+      // Medidas compactas de tarjetas
       const headerH = 64;
       const innerPadX = 16;
       const quotaBarH = 36;
@@ -1823,8 +1869,8 @@
       const pillGapX = 9;
       const pillGapY = 9;
       const pillH = 44;
-      const innerW = colW - innerPadX * 2; // 480px
-      const pillW = (innerW - pillGapX * (pillCols - 1)) / pillCols; // 154px
+      const innerW = colW - innerPadX * 2;
+      const pillW = (innerW - pillGapX * (pillCols - 1)) / pillCols;
       const detailLineH = 26;
       const detailPadY = 8;
       const detailPadX = 12;
@@ -1846,9 +1892,22 @@
         return;
       }
 
-      // Calcular alturas compactas en 2 columnas balanceadas
+      // Medidas del encabezado de resumen semanal
+      const bannerW = W - padX * 2; // 1040px
+      const bannerTopH = 60;
+      const weeklyRowH = 44;
+      const weeklyRowGap = 8;
+      const bannerBodyPadY = 12;
+      const weeklyRows = Math.ceil(weeklyItems.length / 2);
+      const bannerBodyH = weeklyItems.length === 0
+        ? 56
+        : (bannerBodyPadY * 2 + weeklyRows * weeklyRowH + Math.max(0, weeklyRows - 1) * weeklyRowGap);
+      const bannerH = showWeeklyHeader ? (bannerTopH + bannerBodyH) : 0;
+      const cardsStartY = showWeeklyHeader ? (padY + bannerH + 18) : padY;
+
+      // Calcular alturas de las tarjetas en 2 columnas balanceadas
       ctx.font = `600 22px ${fontStack}`;
-      const colHeights = [padY, padY];
+      const colHeights = [cardsStartY, cardsStartY];
       const placed = cards.map(card => {
         const pillRows = Math.ceil(card.cuotasExport.length / pillCols);
         const pillsBlockH = pillRows * pillH + Math.max(0, pillRows - 1) * pillGapY;
@@ -1887,15 +1946,145 @@
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, W, totalH);
 
+      /* ---------- ENCABEZADO: RESUMEN DE PAGOS DE LA SEMANA ---------- */
+      if (showWeeklyHeader) {
+        const bx = padX;
+        const by = padY;
+        const br = 18;
+
+        // Fondo general del banner
+        ctx.fillStyle = "#f8fbff";
+        roundRectPath(ctx, bx, by, bannerW, bannerH, br);
+        ctx.fill();
+
+        // Franja superior azul marino
+        ctx.save();
+        roundRectPath(ctx, bx, by, bannerW, bannerH, br);
+        ctx.clip();
+        ctx.fillStyle = "#071c47";
+        ctx.fillRect(bx, by, bannerW, bannerTopH);
+        ctx.restore();
+
+        // Borde azul marino
+        ctx.strokeStyle = "#0a2254";
+        ctx.lineWidth = 3.2;
+        roundRectPath(ctx, bx, by, bannerW, bannerH, br);
+        ctx.stroke();
+
+        // Título y rango de fechas (hoy a +7 días)
+        const dStart = formatCardDateParts(todayISO());
+        const dEnd = formatCardDateParts(addDaysISO(todayISO(), 7));
+        const rangeLabel = `${dStart.day} ${dStart.month} – ${dEnd.day} ${dEnd.month}`;
+
+        ctx.fillStyle = "#ffffff";
+        ctx.font = `900 26px ${fontStack}`;
+        ctx.textAlign = "left";
+        ctx.textBaseline = "middle";
+        const mainTitle = "PAGOS DE ESTA SEMANA";
+        ctx.fillText(mainTitle, bx + 20, by + bannerTopH / 2 + 1);
+        const mainTitleW = ctx.measureText(mainTitle).width;
+
+        ctx.fillStyle = "#93c5fd";
+        ctx.font = `700 21px ${fontStack}`;
+        ctx.fillText(`(${rangeLabel})`, bx + 20 + mainTitleW + 12, by + bannerTopH / 2 + 1);
+
+        // Recuadro con el TOTAL de la semana a la derecha
+        const totalBadgeTxt = `Total: ${formatMoney(weeklySum)}`;
+        ctx.font = `900 25px ${fontStack}`;
+        const tbTextW = ctx.measureText(totalBadgeTxt).width;
+        const tbW = tbTextW + 28;
+        const tbH = 40;
+        const tbX = bx + bannerW - tbW - 14;
+        const tbY = by + (bannerTopH - tbH) / 2;
+
+        ctx.fillStyle = "#dbeafe";
+        roundRectPath(ctx, tbX, tbY, tbW, tbH, 10);
+        ctx.fill();
+
+        ctx.fillStyle = "#071c47";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(totalBadgeTxt, tbX + tbW / 2, tbY + tbH / 2 + 1);
+
+        // Contenido del banner semanal
+        const bodyY = by + bannerTopH;
+        if (weeklyItems.length === 0) {
+          ctx.fillStyle = "#15803d";
+          ctx.font = `800 24px ${fontStack}`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("Sin cuotas pendientes por pagar esta semana", bx + bannerW / 2, bodyY + bannerBodyH / 2);
+        } else {
+          const itemGapX = 14;
+          const itemPadSide = 14;
+          const itemColW = (bannerW - itemPadSide * 2 - itemGapX) / 2;
+
+          weeklyItems.forEach((item, idx) => {
+            const r = Math.floor(idx / 2);
+            const c = idx % 2;
+            const ix = bx + itemPadSide + c * (itemColW + itemGapX);
+            const iy = bodyY + bannerBodyPadY + r * (weeklyRowH + weeklyRowGap);
+            const cy = iy + weeklyRowH / 2;
+            const dp = formatCardDateParts(item.fecha);
+            const isOverdue = item.diff < 0;
+            const isToday = item.diff === 0;
+
+            // Caja de cada cuota de la semana
+            ctx.fillStyle = isOverdue ? "#fef2f2" : (isToday ? "#fffbeb" : "#ffffff");
+            roundRectPath(ctx, ix, iy, itemColW, weeklyRowH, 10);
+            ctx.fill();
+
+            ctx.strokeStyle = isOverdue ? "#fca5a5" : (isToday ? "#fcd34d" : "#cfe0f8");
+            ctx.lineWidth = 2;
+            roundRectPath(ctx, ix, iy, itemColW, weeklyRowH, 10);
+            ctx.stroke();
+
+            // Pastilla de fecha a la izquierda
+            const dateBadgeW = 104;
+            const dateBadgeH = 30;
+            const dateBadgeX = ix + 8;
+            const dateBadgeY = iy + (weeklyRowH - dateBadgeH) / 2;
+            const dateBadgeTxt = isToday ? "HOY" : `${dp.day} ${dp.month}`;
+
+            ctx.fillStyle = isOverdue ? "#dc2626" : (isToday ? "#d97706" : "#1d4ed8");
+            roundRectPath(ctx, dateBadgeX, dateBadgeY, dateBadgeW, dateBadgeH, 8);
+            ctx.fill();
+
+            ctx.fillStyle = "#ffffff";
+            ctx.font = `800 20px ${fontStack}`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(dateBadgeTxt, dateBadgeX + dateBadgeW / 2, dateBadgeY + dateBadgeH / 2 + 1);
+
+            // Monto a la derecha
+            const amtTxt = formatQuotaMoney(item.monto);
+            ctx.font = `900 24px ${fontStack}`;
+            ctx.fillStyle = isOverdue ? "#dc2626" : "#071c47";
+            ctx.textAlign = "right";
+            ctx.textBaseline = "middle";
+            ctx.fillText(amtTxt, ix + itemColW - 12, cy + 1);
+            const amtW = ctx.measureText(amtTxt).width;
+
+            // Nombre del comercio en el centro
+            const storeX = dateBadgeX + dateBadgeW + 12;
+            const storeMaxW = (ix + itemColW - 12 - amtW - 12) - storeX;
+            ctx.font = `700 22px ${fontStack}`;
+            ctx.fillStyle = "#0f172a";
+            ctx.textAlign = "left";
+            const storeLabel = isOverdue ? `${item.comercio} (venc.)` : item.comercio;
+            ctx.fillText(fitCanvasText(ctx, storeLabel, Math.max(40, storeMaxW)), storeX, cy + 1);
+          });
+        }
+      }
+
+      /* ---------- TARJETAS COMPACTAS EN 2 COLUMNAS ---------- */
       placed.forEach(({ card, x, y, w, h, pillsBlockH, detailLines, detailBoxH }) => {
         const radius = 18;
 
-        // Fondo de tarjeta
         ctx.fillStyle = "#ffffff";
         roundRectPath(ctx, x, y, w, h, radius);
         ctx.fill();
 
-        // Cabecera azul claro
         ctx.save();
         roundRectPath(ctx, x, y, w, h, radius);
         ctx.clip();
@@ -1903,7 +2092,6 @@
         ctx.fillRect(x, y, w, headerH);
         ctx.restore();
 
-        // Borde azul marino
         ctx.strokeStyle = "#0a2254";
         ctx.lineWidth = 3.2;
         roundRectPath(ctx, x, y, w, h, radius);
@@ -1940,13 +2128,10 @@
         ctx.textBaseline = "middle";
         ctx.fillText(card.comercio, x + innerPadX, y + headerH / 2 + 1);
 
-        // Fila compacta de cuota (ej: "Cuota: 17.60 $ →")
+        // Fila compacta de cuota
         const quotaRowCenterY = y + headerH + topGapAfterHeader + quotaBarH / 2;
         const firstQuotaAmount = card.cuotasExport[0]?.monto ?? card.montoCuota ?? 0;
-        const rawDec = Math.round(firstQuotaAmount * 100) % 100;
-        const amountStr = rawDec === 0
-          ? `${Math.round(firstQuotaAmount)} $`
-          : `${formatCleanNum(firstQuotaAmount, rawDec === 60)} $`;
+        const amountStr = formatQuotaMoney(firstQuotaAmount);
 
         ctx.font = `700 24px ${fontStack}`;
         ctx.fillStyle = "#475569";
@@ -1962,7 +2147,6 @@
         ctx.fillText(amountStr, amtX, quotaRowCenterY);
         const amtW = ctx.measureText(amountStr).width;
 
-        // Flecha corta al lado del monto
         const arrowStartX = amtX + amtW + 12;
         const arrowEndX = arrowStartX + 30;
         ctx.strokeStyle = "#1e3a8a";
@@ -1977,7 +2161,6 @@
         ctx.lineTo(arrowEndX - 8, quotaRowCenterY + 6);
         ctx.stroke();
 
-        // Contador discreto de pendientes a la derecha de la fila de cuota
         const pendingInCard = card.cuotasExport.filter(q => !q.pagada).length;
         const totalShown = card.cuotasExport.length;
         const countTxt = pendingInCard === 0
@@ -2041,7 +2224,7 @@
           }
         });
 
-        // Línea compacta de DETALLES al pie (todo el ancho de la tarjeta)
+        // Recuadro compacto de DETALLES
         if (detailLines.length > 0) {
           const boxX = x + innerPadX;
           const boxY = pillsStartY + pillsBlockH + 10;
@@ -2068,6 +2251,7 @@
         }
       });
 
+      // Pie de página opcional con total pendiente general
       const totalCuotasSum = cards.reduce((s, c) => s + c.cuotasExport.filter(q => !q.pagada).reduce((a, b) => a + (Number(b.monto) || 0), 0), 0);
       if (showFooter) {
         const fy = totalH - footerH + 6;
@@ -2093,7 +2277,7 @@
 
       const totalQuotasCount = cards.reduce((s, c) => s + c.cuotasExport.length, 0);
       document.getElementById("imgStatsText").textContent =
-        `${cards.length} tarjetas · ${totalQuotasCount} cuotas mostradas · Total pendiente: ${formatMoney(totalCuotasSum)}`;
+        `Semana: ${weeklyItems.length} cuota(s) (${formatMoney(weeklySum)}) · ${cards.length} tarjetas · Total pendiente: ${formatMoney(totalCuotasSum)}`;
     }
 
     function downloadCardsPng() {
@@ -2130,7 +2314,7 @@
       }, "image/png");
     }
 
-    ["imgFilterTag", "imgShowDetails", "imgOnlyPending", "imgHighlightOverdue", "imgShowTotalFooter"].forEach(id => {
+    ["imgFilterTag", "imgShowWeeklyHeader", "imgShowDetails", "imgOnlyPending", "imgHighlightOverdue", "imgShowTotalFooter"].forEach(id => {
       document.getElementById(id).addEventListener("change", renderCardsImage);
     });
     document.getElementById("btnDownloadImg").addEventListener("click", downloadCardsPng);
